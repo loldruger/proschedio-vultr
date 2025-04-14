@@ -1,0 +1,24 @@
+{
+	"python.testing.pytestArgs": [
+		"-s",
+		"--log-cli-level=INFO",
+		"tests"
+	],
+	"python.testing.unittestEnabled": false,
+	"python.testing.pytestEnabled": true,
+	"python.analysis.autoFormatStrings": true,
+	"python.analysis.diagnosticMode": "workspace",
+	"debugpy.showPythonInlineValues": true,
+	"python.languageServer": "Pylance",
+	"python.analysis.generateWithTypeAnnotation": true,
+	"python.analysis.inlayHints.functionReturnTypes": true,
+	"python.analysis.languageServerMode": "full",
+	"python.analysis.typeCheckingMode": "strict",
+	"python.analysis.inlayHints.variableTypes": true,
+	"python.analysis.typeEvaluation.deprecateTypingAliases": true,
+	"python.analysis.typeEvaluation.disableBytesTypePromotions": true,
+	"python.analysis.typeEvaluation.enableReachabilityAnalysis": true,
+	"python.analysis.typeEvaluation.strictDictionaryInference": true,
+	"python.analysis.typeEvaluation.strictListInference": true,
+	"python.analysis.typeEvaluation.strictSetInference": true,
+}

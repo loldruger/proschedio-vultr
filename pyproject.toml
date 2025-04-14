@@ -1,0 +1,24 @@
+[project]
+name = "proschedio-vultr"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Siyoung September", email = "loldruger@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "aiohttp>=3.11.16",
+    "rustipy>=0.1.5",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3.5",
+    "pytest-asyncio>=0.26.0",
+    "pytest-dotenv>=0.5.2"
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
