@@ -8,8 +8,10 @@ from ..plugin import ResourceState, ActionResult, ErrorDetails
 class ResourceHandlerInterface(ABC):
     """Interface for handling a specific resource type."""
 
-    def __init__(self, client: VultrApiClient):
-        self._client = client
+    # Remove client dependency from __init__
+    def __init__(self):
+        # self._client = client # Removed
+        pass
 
     @abstractmethod
     async def create(self, config: dict[str, Any]) -> Result[ResourceState, ErrorDetails]:

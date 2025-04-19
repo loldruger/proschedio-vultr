@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 class Action:
     @staticmethod
-    def instance()-> 'ActionInstance':
+    def instance() -> 'ActionInstance':
         return ActionInstance()
 
 class ActionInstance:
