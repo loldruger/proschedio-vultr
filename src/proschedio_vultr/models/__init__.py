@@ -1,5 +1,5 @@
-from .instance import InstanceCreateConfig
+from .instance import CreateConfig
 
 __all__: list[str] = [
-    "InstanceCreateConfig",
+    "CreateConfig",
 ]

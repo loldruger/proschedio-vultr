@@ -7,16 +7,17 @@ from typing import Literal
 from rustipy.result import Result
 
 from ..urls import (
-    URL_INSTANCE_BACKUP_SCHEDULE, URL_INSTANCE_BANDWIDTH, URL_INSTANCE_HALT,
+    URL_INSTANCE_BACKUP_SCHEDULE, URL_INSTANCE_BANDWIDTH, URL_INSTANCE_BY_ID,
     URL_INSTANCE_IPV4, URL_INSTANCE_IPV4_REVERSE, URL_INSTANCE_IPV4_REVERSE_DEFAULT,
     URL_INSTANCE_IPV6, URL_INSTANCE_IPV6_REVERSE, URL_INSTANCE_IPV6_REVERSE_IPV6,
-    URL_INSTANCE_ISO, URL_INSTANCE_ISO_ATTACH, URL_INSTANCE_ISO_DETACH,
+    URL_INSTANCE_ISO, URL_INSTANCE_ISO_ATTACH, URL_INSTANCE_ISO_DETACH, URL_INSTANCE_LIST,
     URL_INSTANCE_NEIGHBORS, URL_INSTANCE_REINSTALL, URL_INSTANCE_RESTORE,
     URL_INSTANCE_UPGRADES, URL_INSTANCE_USER_DATA, URL_INSTANCE_VPCS,
-    URL_INSTANCE_VPCS_ATTACH, URL_INSTANCE_VPCS_DETACH
+    URL_INSTANCE_VPCS_ATTACH, URL_INSTANCE_VPCS_DETACH, URL_INSTANCES_REBOOT,
+    URL_INSTANCES_START, URL_INSTANCE_CREATE, URL_INSTANCE_HALT,
 )
 from ..request import Request, SuccessResponse, ErrorResponse
-from ..models import instance as instance_structs
+from ..models.instance import BackupScheduleConfig, CreateConfig, ListConfig, UpdateConfig
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +27,69 @@ class Action:
         return ActionInstance()
 
 class ActionInstance:
+    async def list_(self, filters: ListConfig | None) -> Result[SuccessResponse, ErrorResponse]:
+        """
+        List all VPS instances in your account.
+        """
+        request = (
+            Request(URL_INSTANCE_LIST.to_str()) 
+                .set_method(HTTPMethod.GET)
+                .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}")
+        )
+
+        if filters is not None:
+            request.add_param("filters", json.dumps(filters))
+
+        return await request.request()
+
+    async def create(self, config: CreateConfig) -> Result[SuccessResponse, ErrorResponse]:
+        """
+        Create a new Vultr VPS Instance.
+        """
+        return (
+            await Request(URL_INSTANCE_CREATE.to_str())
+                .set_method(HTTPMethod.POST)
+                .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}")
+                .add_header("Content-Type", "application/json")
+                .set_body(json.dumps(config))
+                .request()
+        )
+
+    async def get(self, instance_id: str) -> Result[SuccessResponse, ErrorResponse]:
+        """
+        Get information about a Vultr Instance.
+        """
+        return (
+            await Request(URL_INSTANCE_BY_ID.assign("instance-id", instance_id).to_str())
+                .set_method(HTTPMethod.GET)
+                .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}")
+                .request()
+        )
+
+    async def update(self, instance_id: str, data: UpdateConfig) -> Result[SuccessResponse, ErrorResponse]:
+        """
+        Update information for a Vultr Instance.
+        """
+        return (
+            await Request(URL_INSTANCE_BY_ID.assign("instance-id", instance_id).to_str())
+                .set_method(HTTPMethod.PATCH)
+                .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}")
+                .add_header("Content-Type", "application/json")
+                .set_body(json.dumps(data))
+                .request()
+        )
+
+    async def delete(self, instance_id: str) -> Result[SuccessResponse, ErrorResponse]:
+        """
+        Delete a Vultr Instance.
+        """
+        return (
+            await Request(URL_INSTANCE_BY_ID.assign("instance-id", instance_id).to_str())
+                .set_method(HTTPMethod.DELETE)
+                .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}")
+                .request()
+        )
+    
     async def reinstall_instance(self, instance_id: str, hostname: str | None) -> Result[SuccessResponse, ErrorResponse]:
         """
         Reinstall a Vultr Instance using an optional `hostname`. (Vultr specific)
@@ -156,7 +220,7 @@ class ActionInstance:
                 .request()
         )
 
-    async def set_instance_backup_schedule(self, instance_id: str, data: instance_structs.SetInstanceBackupScheduleData) -> Result[SuccessResponse, ErrorResponse]:
+    async def set_instance_backup_schedule(self, instance_id: str, data: BackupScheduleConfig) -> Result[SuccessResponse, ErrorResponse]:
         """
         Set the backup schedule for a Vultr Instance. (Vultr specific)
         """
@@ -165,7 +229,7 @@ class ActionInstance:
                 .set_method(HTTPMethod.POST)
                 .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}")
                 .add_header("Content-Type", "application/json")
-                .set_body(data.to_json())
+                .set_body(json.dumps(data))
                 .request()
         )
 
@@ -336,7 +400,7 @@ class ActionInstance:
         Reboot multiple Vultr Instances. (Vultr specific)
         """
         return (
-            await Request(url_instance_reboot())
+            await Request(URL_INSTANCES_REBOOT.to_str())
                 .set_method(HTTPMethod.POST)
                 .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}")
                 .add_header("Content-Type", "application/json")
@@ -349,7 +413,7 @@ class ActionInstance:
         Start multiple Vultr Instances. (Vultr specific)
         """
         return (
-            await Request(url_instance_start())
+            await Request(URL_INSTANCES_START.to_str()) # Use the correct URL constant
                 .set_method(HTTPMethod.POST)
                 .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}")
                 .add_header("Content-Type", "application/json")

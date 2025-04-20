@@ -27,23 +27,21 @@ URL_ACCOUNT_BANDWIDTH: Final[Url] = Url(URL_BASE).uri("account/bandwidth")
 - `GET`: Get your Vultr account bandwidth information.
 """
 
+URL_ACCOUNT_BGP: Final[Url] = Url(URL_BASE).uri("account/bgp")
+"""
+### Request Methods
+- `GET`: Get your Vultr account BGP information.
+"""
+
 URL_APPLICATIONS: Final[Url] = Url(URL_BASE).uri("applications")
 """
 ### Request Methods
-- `GET`: Get a list of all available Applications.
+- `GET`: List all available Applications.
 
 ### Query parameters
-- `GET`:
-    - `type` - Filter the results by type.
-
-| Type | Description |
-| --- | --- |
-| all | All available aplication types |
-| marketplace | Marketplace applications |
-| one-click | Vultr one-click applications |
-
-    - `per_page` - Number of applications per page. Default is 100 and max is 500.
-    - `cursor` - Cursor for paging. See Meta and pagination.
+- `per_page` - (optional) Number of items requested per page. Default is 100.
+- `cursor` - (optional) Cursor for paging.
+- `type` - (optional) Filter by type, `marketplace` or `one-click`.
 """
 
 URL_BACKUPS: Final[Url] = Url(URL_BASE).uri("backups")
@@ -623,6 +621,7 @@ URL_CDN_LIST_PULL_ZONES: Final[Url] = Url(URL_BASE).uri("cdns/pull-zones")
     "block_bad_bots": Optional<Boolean> // Block potentially malicious bots
 }
 // Required: label, origin_scheme, origin_domain
+}
 ```
 """
 
@@ -913,6 +912,18 @@ URL_CONTAINER_LIST_REGIONS: Final[Url] = Url(URL_BASE).uri("registry/region/list
 """
 ### Request Methods
 - `GET`: List All Regions where a Container Registry can be deployed
+"""
+
+URL_CONTAINER_UPDATE_PASSWORD: Final[Url] = Url(URL_BASE).uri("registry/{registry-id}/user/password")
+"""
+### Request Methods
+- `PUT`: Update the Container Registy Password for this Container Registry Subscription
+"""
+
+URL_CONTAINER_LIST_PLANS: Final[Url] = Url(URL_BASE).uri("registry/plan/list")
+"""
+### Request Methods
+- `GET`: List All Plans to help choose which one is the best fit for your Container Registry
 """
 
 URL_DATABASE_LIST_PLANS: Final[Url] = Url(URL_BASE).uri("databases/plans")
@@ -1374,6 +1385,78 @@ URL_DATABASE_VERSION_UPGRADE: Final[Url] = Url(URL_BASE).uri("databases/{databas
 ```
 """
 
+URL_DATABASE_ALERTS: Final[Url] = Url(URL_BASE).uri("databases/{database-id}/alerts")
+"""
+### Request Methods
+- `POST`: List service alert messages for the Managed Database.
+
+### Request Body Schema
+- `POST`: Include a JSON object in the request body with a content type of **application/json**.
+"""
+
+URL_DATABASE_AVAILABLE_CONNECTORS: Final[Url] = Url(URL_BASE).uri("databases/{database-id}/available-connectors")
+"""
+### Request Methods
+- `GET`: List all available connectors for the Managed Database (Kafka engine types only).
+"""
+
+URL_DATABASE_AVAILABLE_CONNECTOR_CONFIGURATION: Final[Url] = Url(URL_BASE).uri("databases/{database-id}/available-connectors/{connector-class}/configuration")
+"""
+### Request Methods
+- `GET`: Get the configuration schema for the Managed Database connector (Kafka engine types only).
+"""
+
+URL_DATABASE_CONNECTORS: Final[Url] = Url(URL_BASE).uri("databases/{database-id}/connectors")
+"""
+### Request Methods
+- `GET`: List all connectors within the Managed Database (Kafka engine types only).
+- `POST`: Create a new connector within the Managed Database (Kafka engine types only).
+
+### Request Body Schema
+- `POST`: Include a JSON object in the request body with a content type of **application/json**.
+"""
+
+URL_DATABASE_CONNECTOR: Final[Url] = Url(URL_BASE).uri("databases/{database-id}/connectors/{connector-name}")
+"""
+### Request Methods
+- `GET`: Get information about a Managed Database connector (Kafka engine types only).
+- `PUT`: Update connector information within a Managed Database (Kafka engine types only).
+- `DELETE`: Delete a connector within a Managed Database (Kafka engine types only).
+
+### Request Body Schema
+- `PUT`: Include a JSON object in the request body with a content type of **application/json**.
+"""
+
+URL_DATABASE_CONNECTOR_STATUS: Final[Url] = Url(URL_BASE).uri("databases/{database-id}/connectors/{connector-name}/status")
+"""
+### Request Methods
+- `GET`: Get status information about a Managed Database connector (Kafka engine types only).
+"""
+
+URL_DATABASE_CONNECTOR_RESTART: Final[Url] = Url(URL_BASE).uri("databases/{database-id}/connectors/{connector-name}/restart")
+"""
+### Request Methods
+- `POST`: Restart a connector within a Managed Database (Kafka engine types only).
+"""
+
+URL_DATABASE_CONNECTOR_PAUSE: Final[Url] = Url(URL_BASE).uri("databases/{database-id}/connectors/{connector-name}/pause")
+"""
+### Request Methods
+- `POST`: Pause a connector within a Managed Database (Kafka engine types only).
+"""
+
+URL_DATABASE_CONNECTOR_RESUME: Final[Url] = Url(URL_BASE).uri("databases/{database-id}/connectors/{connector-name}/resume")
+"""
+### Request Methods
+- `POST`: Resume a paused connector within a Managed Database (Kafka engine types only).
+"""
+
+URL_DATABASE_CONNECTOR_TASK_RESTART: Final[Url] = Url(URL_BASE).uri("databases/{database-id}/connectors/{connector-name}/tasks/{task-id}/restart")
+"""
+### Request Methods
+- `POST`: Restart a task within a Managed Database connector (Kafka engine types only).
+"""
+
 URL_DOMAIN_LIST: Final[Url] = Url(URL_BASE).uri("domains")
 """
 ### Request Methods
@@ -1579,6 +1662,43 @@ URL_FIREWALL_GROUP_RULE: Final[Url] = Url(URL_BASE).uri("firewalls/{firewall-gro
 ### Path parameters
 - `firewall-group-id` - The [Firewall Group id](#operation/list-firewall-groups).
 - `firewall-rule-id` - The [Firewall Rule id](#operation/list-firewall-group-rules).
+"""
+
+URL_ISO_LIST: Final[Url] = Url(URL_BASE).uri("iso")
+"""
+### Request Methods
+- `GET`: List all private ISOs currently available on your account.
+- `POST`: Create a new private ISO. The `url` attribute is required.
+
+### Query parameters
+- `GET`:
+    - `per_page` - Number of items requested per page. Default is 100 and Max is 500.
+    - `cursor` - Cursor for paging. See [Meta and Pagination](#section/Introduction/Meta-and-Pagination).
+
+### Request Body Schema
+- `POST`:
+
+```js
+{
+    "url": String // The URL from which the ISO will be downloaded.
+}
+```
+"""
+
+URL_ISO_ID: Final[Url] = Url(URL_BASE).uri("iso/{iso-id}")
+"""
+### Request Methods
+- `GET`: Get information for an ISO.
+- `DELETE`: Delete an ISO.
+
+### Path parameters
+- `iso-id` - The [ISO id](#operation/list-isos).
+"""
+
+URL_ISO_PUBLIC_LIST: Final[Url] = Url(URL_BASE).uri("iso-public")
+"""
+### Request Methods
+- `GET`: List all public ISOs available.
 """
 
 URL_INFERENCE_LIST: Final[Url] = Url(URL_BASE).uri("inference")
@@ -2099,6 +2219,60 @@ URL_INSTANCE_UPGRADES: Final[Url] = Url(URL_BASE).uri("instances/{instance-id}/u
 - `type` - Filter upgrade by type:\n\n- all (applications, os, plans)\n- applications\n- os\n- plans
 """
 
+URL_INSTANCES_REBOOT: Final[Url] = Url(URL_BASE).uri("instances/reboot")
+"""
+### Request Methods
+- `POST`: Reboot multiple Vultr Instances.
+
+### Request Body Schema
+- `POST`:
+
+```js
+{
+    "instance_ids": Array<String> // Array of Instance ids to reboot.
+}
+```
+"""
+
+URL_INSTANCES_START: Final[Url] = Url(URL_BASE).uri("instances/start")
+"""
+### Request Methods
+- `POST`: Start multiple Vultr Instances.
+
+### Request Body Schema
+- `POST`:
+
+```js
+{
+    "instance_ids": Array<String> // Array of Instance ids to start.
+}
+```
+"""
+
+URL_INSTANCE_START: Final[Url] = Url(URL_BASE).uri("instances/{instance-id}/start")
+"""
+### Request Methods
+- `POST`: Start an Instance.
+
+### Path Parameters
+- `instance-id` - The [Instance ID](#operation/list-instances).
+"""
+
+URL_INSTANCES_HALT: Final[Url] = Url(URL_BASE).uri("instances/halt")
+"""
+### Request Methods
+- `POST`: Halt Instances.
+"""
+
+URL_INSTANCE_REBOOT: Final[Url] = Url(URL_BASE).uri("instances/{instance-id}/reboot")
+"""
+### Request Methods
+- `POST`: Reboot an Instance.
+
+### Path parameters
+- `instance-id` - The [Instance ID](#operation/list-instances).
+"""
+
 URL_KUBERNETES_LIST: Final[Url] = Url(URL_BASE).uri("kubernetes/clusters")
 """
 ### Request Methods
@@ -2459,7 +2633,7 @@ URL_LOAD_BALANCER_FORWARDING_RULES: Final[Url] = Url(URL_BASE).uri("load-balance
     "frontend_protocol": String, // "The protocol on the Load Balancer to forward to the backend.\n\n* HTTP\n* HTTPS\n* TCP",
     "frontend_port": Integer, // "The port number on the Load Balancer to forward to the backend.",
     "backend_protocol": String, // "The protocol destination on the backend server.\n\n* HTTP\n* HTTPS\n* TCP",
-    "backend_port": Integer, // "The port number destination on the backend server."
+    "backend_port": Integer // "The port number destination on the backend server."
 }
 ```
 """
@@ -2630,13 +2804,18 @@ URL_RESERVED_IP: Final[Url] = Url(URL_BASE).uri("reserved-ips")
 - `GET`: List all Reserved IPs in your account.
 - `POST`: Create a new Reserved IP. The `region` and `ip_type` attributes are required.
 
+### Query parameters
+- `GET`:
+    - `per_page` - Number of items requested per page. Default is 100 and Max is 500.
+    - `cursor` - Cursor for paging. See [Meta and Pagination](#section/Introduction/Meta-and-Pagination).
+
 ### Request Body Schema
 - `POST`:
 
 ```js
 {
     "region": String, // The [Region id](#operation/list-regions) where the Reserved IP will be created.
-    "ip_type": String, // The type of IP address.\n\n* v4\n* v6
+    "ip_type": String, // The type of IP address.\\n\\n* v4\\n* v6
     "label": String // The user-supplied label.
 }
 ```
@@ -2653,7 +2832,7 @@ URL_RESERVED_IP_ID: Final[Url] = Url(URL_BASE).uri("reserved-ips/{reserved-ip}")
 - `reserved-ip` - The [Reserved IP id](#operation/list-reserved-ips).
 
 ### Request Body Schema
-- `PATCH`:
+- `PATCH`: Include a JSON object in the request body with a content type of **application/json**.
 
 ```js
 {
@@ -2664,14 +2843,14 @@ URL_RESERVED_IP_ID: Final[Url] = Url(URL_BASE).uri("reserved-ips/{reserved-ip}")
 
 URL_RESERVED_IP_ATTACH: Final[Url] = Url(URL_BASE).uri("reserved-ips/{reserved-ip}/attach")
 """
+### Path Parameters
+- `reserved-ip`: The [Reserved IP id](#operation/list-reserved-ips)
+
 ### Request Methods
 - `POST`: Attach a Reserved IP to an compute instance or a baremetal instance - `instance_id`.
 
-### Path parameters
-- `reserved-ip` - The [Reserved IP id](#operation/list-reserved-ips).
-
 ### Request Body Schema
-- `POST`:
+- `POST`: Include a JSON object in the request body with a content type of **application/json**.
 
 ```js
 {
@@ -2695,7 +2874,7 @@ URL_RESERVED_IP_CONVERT: Final[Url] = Url(URL_BASE).uri("reserved-ips/convert")
 - `POST`: Convert the `ip_address` of an existing [instance](#operation/list-instances) into a Reserved IP.
 
 ### Request Body Schema
-- `POST`:
+- `POST`: Include a JSON object in the request body with a content type of **application/json**.
 
 ```js
 {
@@ -2765,11 +2944,60 @@ URL_SNAPSHOT_CREATE_FROM_URL: Final[Url] = Url(URL_BASE).uri("snapshots/create-f
 ```
 """
 
+URL_SUBACCOUNTS: Final[Url] = Url(URL_BASE).uri("subaccounts")
+"""
+### Request Methods
+- `GET`: List all Sub-accounts linked to your account.
+- `POST`: Create a new Sub-account.
+
+### Query parameters
+- `GET`:
+    - `per_page` - Number of items requested per page. Default is 100 and Max is 500.
+    - `cursor` - Cursor for paging. See [Meta and Pagination](#section/Introduction/Meta-and-Pagination).
+
+### Request Body Schema
+- `POST`:
+
+```js
+{
+    "email": String, // The email address for the Sub-account.
+    "name": String, // The name for the Sub-account.
+    "password": String, // The password for the Sub-account.
+    "acls": Array<String> // Array of ACLs to grant the Sub-account. See [ACL documentation](https://www.vultr.com/docs/vultr-api-access-control/).
+}
+```
+"""
+
+URL_STARTUP_SCRIPTS: Final[Url] = Url(URL_BASE).uri("startup-scripts")
+"""
+### Request Methods
+- `GET`: List all Startup Scripts in your account.
+- `POST`: Create a new Startup Script.
+
+### Query parameters
+- `GET`:
+    - `per_page` - Number of items requested per page. Default is 100 and Max is 500.
+    - `cursor` - Cursor for paging. See [Meta and Pagination](#section/Introduction/Meta-and-Pagination).
+
+### Request Body Schema
+- `POST`:
+
+```js
+{
+    "name": String, // The name of the Startup Script.
+    "type": String, // The type of the Startup Script.
+    // * boot
+    // * pxe
+    "script": String // The base64 encoded Startup Script.
+}
+```
+"""
+
 URL_STARTUP_SCRIPT_ID: Final[Url] = Url(URL_BASE).uri("startup-scripts/{startup-id}")
 """
 ### Request Methods
 - `GET`: Get information for a Startup Script.
-- `PATCH`: Update a Startup Script.
+- `PATCH`: Update information for a Startup Script.
 - `DELETE`: Delete a Startup Script.
 
 ### Path parameters
@@ -2780,9 +3008,11 @@ URL_STARTUP_SCRIPT_ID: Final[Url] = Url(URL_BASE).uri("startup-scripts/{startup-
 
 ```js
 {
-    "name": String, // The name of the Startup Script.
-    "script": String, // The base-64 encoded Startup Script.
-    "type": String // The Startup Script type.\n\nboot (default)\npxe
+    "name": Optional<String>, // The name of the Startup Script.
+    "type": Optional<String>, // The type of the Startup Script.
+    // * boot
+    // * pxe
+    "script": Optional<String> // The base64 encoded Startup Script.
 }
 ```
 """
@@ -3120,9 +3350,9 @@ URL_OBJECT_STORAGE_LIST: Final[Url] = Url(URL_BASE).uri("object-storage")
 """
 ### Request Methods
 - `GET`: Get a list of all Object Storage in your account.
-- `POST`: Create new Object Storage. The `cluster_id` attribute is required.
+- `POST`: Create new Object Storage. The `cluster_id` and `tier_id` attributes are required.
 
-### Query Parameters
+### Query parameters
 - `GET`:
     - `per_page` - Number of items requested per page. Default is 100 and Max is 500.
     - `cursor` - Cursor for paging. See [Meta and Pagination](#section/Introduction/Meta-and-Pagination).
@@ -3132,13 +3362,11 @@ URL_OBJECT_STORAGE_LIST: Final[Url] = Url(URL_BASE).uri("object-storage")
 
 ```js
 {
-    "cluster_id": Integer, // "The [Cluster id](#operation/list-object-storage-clusters) where the Object Storage will be created.",
-    "label": Optional<String>, "The user-supplied label for this Object Storage."
+    "cluster_id": Integer, // [Required] The [Cluster id](#operation/list-object-storage-clusters) where the Object Storage will be created.
+    "tier_id": Integer, // [Required] The [Tier id](#operation/list-object-storage-tiers) to use for this Object Storage.
+    "label": Optional<String> // The user-supplied label.
 }
 ```
-
-### Required Fields
-- `cluster_id`
 """
 
 URL_OBJECT_STORAGE_ID: Final[Url] = Url(URL_BASE).uri("object-storage/{object-storage-id}")
@@ -3156,7 +3384,7 @@ URL_OBJECT_STORAGE_ID: Final[Url] = Url(URL_BASE).uri("object-storage/{object-st
 
 ```js
 {
-    "label": Optional<String>, // "The user-supplied label for the Object Storage."
+    "label": String // [Required] The user-supplied label.
 }
 ```
 """
@@ -3180,39 +3408,26 @@ URL_OBJECT_STORAGE_CLUSTERS: Final[Url] = Url(URL_BASE).uri("object-storage/clus
 - `cursor` - Cursor for paging. See [Meta and Pagination](#section/Introduction/Meta-and-Pagination).
 """
 
-URL_ISO_LIST: Final[Url] = Url(URL_BASE).uri("iso")
+URL_OBJECT_STORAGE_TIERS: Final[Url] = Url(URL_BASE).uri("object-storage/tiers")
 """
 ### Request Methods
-- `GET`: Get the ISOs in your account.
-- `POST`: Create a new ISO in your account from `url`.
+- `GET`: Get a list of all Object Storage Tiers.
 
-### Query Parameters
+### Query parameters
 - `GET`:
     - `per_page` - Number of items requested per page. Default is 100 and Max is 500.
     - `cursor` - Cursor for paging. See [Meta and Pagination](#section/Introduction/Meta-and-Pagination).
-
-### Request Body Schema
-- `POST`:
-
-```js
-{
-    "url": String, // "Public URL location of the ISO image to download. Example: https://example.com/my-iso.iso"
-}
-```
 """
-
-URL_ISO_ID: Final[Url] = Url(URL_BASE).uri("iso/{iso-id}")
+URL_OBJECT_STORAGE_CLUSTER_TIERS: Final[Url] = Url(URL_BASE).uri("object-storage/clusters/{cluster-id}/tiers")
 """
 ### Request Methods
-- `GET`: Get information for an ISO.
-- `DELETE`: Delete an ISO.
+- `GET`: Get a list of all Object Storage Tiers for a given Cluster.
 
 ### Path parameters
-- `iso-id` - The [ISO id](#operation/list-isos).
-"""
+- `cluster-id` - The [Cluster id](#operation/list-object-storage-clusters).
 
-URL_ISO_PUBLIC_LIST: Final[Url] = Url(URL_BASE).uri("iso-public")
-"""
-### Request Methods
-- `GET`: List all Vultr Public ISOs.
+### Query parameters
+- `GET`:
+    - `per_page` - Number of items requested per page. Default is 100 and Max is 500.
+    - `cursor` - Cursor for paging. See [Meta and Pagination](#section/Introduction/Meta-and-Pagination).
 """

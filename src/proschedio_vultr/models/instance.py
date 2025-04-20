@@ -1,6 +1,6 @@
 from typing import Literal, TypedDict
 
-class InstanceCreateConfig(TypedDict, total=False):
+class CreateConfig(TypedDict, total=False):
     """
     Data structure used for creating a Vultr VPS Instance.
     """
@@ -33,7 +33,7 @@ class InstanceCreateConfig(TypedDict, total=False):
     wait_timeout: int | None
     wait_interval: int | None
 
-class InstanceUpdateConfig(TypedDict, total=False):
+class UpdateConfig(TypedDict, total=False):
     """
     Data structure used for updating a Vultr VPS Instance.
     All fields are optional.
@@ -54,7 +54,7 @@ class InstanceUpdateConfig(TypedDict, total=False):
     backups: Literal["enabled", "disabled"] | None
     hostname: str | None
 
-class InstanceCreateRequestBody(TypedDict):
+class CreateRequestBody(TypedDict):
     """
     Data structure used for creating a Vultr VPS Instance.
     """
@@ -85,3 +85,23 @@ class InstanceCreateRequestBody(TypedDict):
     # Fields potentially added by user request: user_scheme, app_variables
     user_scheme: Literal["root", "limited"] | None
     # self._app_variables: dict] = None
+
+class BackupScheduleConfig(TypedDict):
+    type: Literal["daily", "weekly", "monthly", "daily_alt_even", "daily_odd"]
+    hour: int | None
+    dow: int | None
+    dom: int | None
+
+class ListConfig(TypedDict):
+    """
+    Data structure used for filtering the list of Vultr VPS Instances.
+    """
+    per_page: int | None
+    cursor: str | None
+    tag: str | None # Deprecated
+    label: str | None
+    main_ip: str | None
+    region: str | None
+    firewall_group_id: str | None
+    hostname: str | None
+    show_pending_charges: bool | None
