@@ -1,18 +1,15 @@
 import json
 import os
 from http import HTTPMethod
-from typing import List
 
 from rustipy.result import Result
 
+from ..models import CreateConfig
 from ..request import Request, SuccessResponse, ErrorResponse
 from ..urls import (
     URL_VPC2_LIST, URL_VPC2_ID, URL_VPC2_NODES,
     URL_VPC2_ATTACH_NODES, URL_VPC2_DETACH_NODES
 )
-
-CreateVpc2Data = dict
-AttachDetachVpc2NodesData = dict
 
 class VPC2:
     @staticmethod
@@ -39,22 +36,18 @@ class VPC2:
         return await request.request()
 
     @staticmethod
-    async def create_vpc2(data: CreateVpc2Data) -> Result[SuccessResponse, ErrorResponse]:
+    async def create_vpc2(data: CreateConfig) -> Result[SuccessResponse, ErrorResponse]:
         """
         Create a new VPC 2.0 network in a `region`.
 
         Args:
-            data (CreateVpc2Data): The data to create the VPC 2.0 network.
+            data (CreateConfig): The data to create the VPC 2.0 network.
 
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
-        if hasattr(data, 'to_json'):
-            body_dict = {k: v for k, v in data.to_json().items() if v is not None}
-        elif isinstance(data, dict):
-            body_dict = {k: v for k, v in data.items() if v is not None}
-        else:
-            raise TypeError("Unsupported type for data")
+
+        body_dict = {k: v for k, v in data.items() if v is not None}
 
         return await Request(URL_VPC2_LIST.to_str()) \
             .set_method(HTTPMethod.POST) \
@@ -139,23 +132,19 @@ class VPC2:
         return await request.request()
 
     @staticmethod
-    async def attach_vpc2_nodes(vpc_id: str, data: AttachDetachVpc2NodesData) -> Result[SuccessResponse, ErrorResponse]:
+    async def attach_vpc2_nodes(vpc_id: str, data: list[list[str]]) -> Result[SuccessResponse, ErrorResponse]:
         """
         Attach nodes to a VPC 2.0 network.
 
         Args:
             vpc_id (str): The [VPC ID](#operation/list-vpcs).
-            data (AttachDetachVpc2NodesData): The data to attach nodes to the VPC 2.0 network.
+            data (list[list[str]]): The data to attach nodes to the VPC 2.0 network.
 
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
-        if hasattr(data, 'to_json'):
-            body_dict = {k: v for k, v in data.to_json().items() if v is not None}
-        elif isinstance(data, dict):
-            body_dict = {k: v for k, v in data.items() if v is not None}
-        else:
-            raise TypeError("Unsupported type for data")
+
+        body_dict = {"nodes": [node for sublist in data for node in sublist]}
 
         return await Request(URL_VPC2_ATTACH_NODES.assign("vpc-id", vpc_id).to_str()) \
             .set_method(HTTPMethod.POST) \
@@ -165,23 +154,19 @@ class VPC2:
             .request()
 
     @staticmethod
-    async def detach_vpc2_nodes(vpc_id: str, data: AttachDetachVpc2NodesData) -> Result[SuccessResponse, ErrorResponse]:
+    async def detach_vpc2_nodes(vpc_id: str, data: list[list[str]]) -> Result[SuccessResponse, ErrorResponse]:
         """
         Remove nodes from a VPC 2.0 network.
 
         Args:
             vpc_id (str): The [VPC ID](#operation/list-vpcs).
-            data (AttachDetachVpc2NodesData): The data to detach nodes from the VPC 2.0 network.
+            data (list[list[str]]): The data to detach nodes from the VPC 2.0 network.
 
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
-        if hasattr(data, 'to_json'):
-            body_dict = {k: v for k, v in data.to_json().items() if v is not None}
-        elif isinstance(data, dict):
-            body_dict = {k: v for k, v in data.items() if v is not None}
-        else:
-            raise TypeError("Unsupported type for data")
+
+        body_dict = {"nodes": [node for sublist in data for node in sublist]}
 
         return await Request(URL_VPC2_DETACH_NODES.assign("vpc-id", vpc_id).to_str()) \
             .set_method(HTTPMethod.POST) \
