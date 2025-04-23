@@ -14,7 +14,3 @@ class CreateConfig(TypedDict, total=False):
     storage_size: int
     disk_type: str | None
     tags: list[str] | None
-
-class UpdateConfig(TypedDict, total=False):
-    label: str
-    storage_size: int
