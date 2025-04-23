@@ -1,6 +1,6 @@
 from typing import Literal, TypedDict
 
-class CreateReservedIpBody(TypedDict, total=False):
+class CreateReservedIpConfig(TypedDict, total=False):
     """
     Data structure used for creating a Vultr Reserved IP.
     `region` and `ip_type` are required.
@@ -9,13 +9,13 @@ class CreateReservedIpBody(TypedDict, total=False):
     ip_type: Literal["v4", "v6"] # Required
     label: str | None
 
-class UpdateReservedIpBody(TypedDict):
+class UpdateReservedIpConfig(TypedDict):
     """
     Data structure used for updating a Vultr Reserved IP.
     """
     label: str
 
-class ConvertIpToReservedIpBody(TypedDict, total=False):
+class ConvertIpToReservedIpConfig(TypedDict, total=False):
     """
     Data structure used for converting an existing instance IP address to a Reserved IP.
     `ip_address` is required.

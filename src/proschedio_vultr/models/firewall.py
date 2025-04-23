@@ -1,18 +1,18 @@
 from typing import Literal, TypedDict
 
-class CreateFirewallGroupBody(TypedDict):
+class CreateFirewallGroupConfig(TypedDict):
     """
     Data structure used for creating a Vultr Firewall Group.
     """
     description: str
 
-class UpdateFirewallGroupBody(TypedDict):
+class UpdateFirewallGroupConfig(TypedDict):
     """
     Data structure used for updating a Vultr Firewall Group.
     """
     description: str
 
-class CreateFirewallRuleBody(TypedDict, total=False):
+class CreateFirewallRuleConfig(TypedDict, total=False):
     """
     Data structure used for creating a Vultr Firewall Rule.
     `ip_type`, `protocol`, `subnet`, and `subnet_size` are required.

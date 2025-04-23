@@ -1,7 +1,7 @@
 from typing import Literal, TypedDict
 
 
-class CreatePullZoneBody(TypedDict, total=False):
+class CreatePullZoneConfig(TypedDict, total=False):
     """
     Data structure used for creating a Vultr CDN Pull Zone.
     `label`, `origin_scheme`, and `origin_domain` are required.
@@ -17,7 +17,7 @@ class CreatePullZoneBody(TypedDict, total=False):
     block_ai: bool | None
     block_bad_bots: bool | None
 
-class UpdatePullZoneBody(TypedDict, total=False):
+class UpdatePullZoneConfig(TypedDict, total=False):
     """
     Data structure used for updating a Vultr CDN Pull Zone.
     All fields are optional.
@@ -32,7 +32,7 @@ class UpdatePullZoneBody(TypedDict, total=False):
     block_bad_bots: bool | None
     regions: list[str] | None
 
-class CreatePushZoneBody(TypedDict, total=False):
+class CreatePushZoneConfig(TypedDict, total=False):
     """
     Data structure used for creating a Vultr CDN Push Zone.
     `label` is required.
@@ -46,7 +46,7 @@ class CreatePushZoneBody(TypedDict, total=False):
     block_ai: bool | None
     block_bad_bots: bool | None
 
-class UpdatePushZoneBody(TypedDict, total=False):
+class UpdatePushZoneConfig(TypedDict, total=False):
     """
     Data structure used for updating a Vultr CDN Push Zone.
     All fields are optional.
@@ -61,7 +61,7 @@ class UpdatePushZoneBody(TypedDict, total=False):
     block_bad_bots: bool | None
     regions: list[str] | None
 
-class CreatePushZoneFileBody(TypedDict):
+class CreatePushZoneFileConfig(TypedDict):
     """
     Data structure used for creating a presigned post endpoint for uploading a file to a Vultr CDN Push Zone.
     """

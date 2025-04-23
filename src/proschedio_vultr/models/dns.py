@@ -1,6 +1,6 @@
 from typing import Literal, TypedDict
 
-class CreateDomainBody(TypedDict, total=False):
+class CreateDomainConfig(TypedDict, total=False):
     """
     Data structure used for creating a Vultr DNS Domain.
     `domain` is required.
@@ -9,13 +9,13 @@ class CreateDomainBody(TypedDict, total=False):
     ip: str | None
     dns_sec: Literal["enabled", "disabled"] | None
 
-class UpdateDomainBody(TypedDict):
+class UpdateDomainConfig(TypedDict):
     """
     Data structure used for updating a Vultr DNS Domain.
     """
     dns_sec: Literal["enabled", "disabled"]
 
-class UpdateDomainSOABody(TypedDict, total=False):
+class UpdateDomainSOAConfig(TypedDict, total=False):
     """
     Data structure used for updating the SOA information for a Vultr DNS Domain.
     All fields are optional.
@@ -23,7 +23,7 @@ class UpdateDomainSOABody(TypedDict, total=False):
     nsprimary: str | None
     email: str | None
 
-class CreateDomainRecordBody(TypedDict, total=False):
+class CreateDomainRecordConfig(TypedDict, total=False):
     """
     Data structure used for creating a DNS record.
     `type`, `name`, `data`, and `ttl` are required.
@@ -34,7 +34,7 @@ class CreateDomainRecordBody(TypedDict, total=False):
     ttl: int # Required
     priority: int | None # Required for MX and SRV
 
-class UpdateDomainRecordBody(TypedDict, total=False):
+class UpdateDomainRecordConfig(TypedDict, total=False):
     """
     Data structure used for updating a DNS record.
     All fields are optional.

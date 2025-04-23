@@ -1,6 +1,6 @@
 from typing import Literal, TypedDict
 
-class CreateDatabaseBody(TypedDict, total=False):
+class CreateDatabaseConfig(TypedDict, total=False):
     """
     Data structure used for creating a Vultr Managed Database.
     `database_engine`, `database_engine_version`, `region`, `plan`, and `label` are required.
@@ -21,7 +21,7 @@ class CreateDatabaseBody(TypedDict, total=False):
     mysql_long_query_time: int | None
     eviction_policy: str | None # Valkey only
 
-class UpdateDatabaseBody(TypedDict, total=False):
+class UpdateDatabaseConfig(TypedDict, total=False):
     """
     Data structure used for updating a Vultr Managed Database.
     All fields are optional.
@@ -41,7 +41,7 @@ class UpdateDatabaseBody(TypedDict, total=False):
     mysql_long_query_time: int | None
     eviction_policy: str | None # Valkey only
 
-class CreateDatabaseUserBody(TypedDict, total=False):
+class CreateDatabaseUserConfig(TypedDict, total=False):
     """
     Data structure used for creating a database user within a Vultr Managed Database.
     `username` is required.
@@ -51,13 +51,13 @@ class CreateDatabaseUserBody(TypedDict, total=False):
     encryption: Literal["caching_sha2_password", "mysql_native_password"] | None # MySQL only
     permission: Literal["admin", "read", "write", "readwrite"] | None # Kafka only
 
-class UpdateDatabaseUserBody(TypedDict, total=False):
+class UpdateDatabaseUserConfig(TypedDict, total=False):
     """
     Data structure used for updating a database user within a Vultr Managed Database.
     """
     password: str | None # Can be empty to auto-generate
 
-class UpdateDatabaseUserAccessControlBody(TypedDict, total=False):
+class UpdateDatabaseUserAccessControlConfig(TypedDict, total=False):
     """
     Data structure used for configuring access control settings for a Managed Database user (Valkey and Kafka engine types only).
     All fields are optional.
@@ -68,13 +68,13 @@ class UpdateDatabaseUserAccessControlBody(TypedDict, total=False):
     acl_keys: list[str] | None # Valkey
     permission: Literal["admin", "read", "write", "readwrite"] | None # Kafka
 
-class CreateDatabaseLogicalDatabaseBody(TypedDict):
+class CreateDatabaseLogicalDatabaseConfig(TypedDict):
     """
     Data structure used for creating a new logical database within a Vultr Managed Database (MySQL and PostgreSQL only).
     """
     name: str
 
-class CreateDatabaseTopicBody(TypedDict):
+class CreateDatabaseTopicConfig(TypedDict):
     """
     Data structure used for creating a new topic within a Vultr Managed Database (Kafka engine types only).
     """
@@ -84,7 +84,7 @@ class CreateDatabaseTopicBody(TypedDict):
     retention_hours: int
     retention_bytes: int
 
-class UpdateDatabaseTopicBody(TypedDict):
+class UpdateDatabaseTopicConfig(TypedDict):
     """
     Data structure used for updating a topic within a Vultr Managed Database (Kafka engine types only).
     """
@@ -93,7 +93,7 @@ class UpdateDatabaseTopicBody(TypedDict):
     retention_hours: int
     retention_bytes: int
 
-class CreateDatabaseQuotaBody(TypedDict):
+class CreateDatabaseQuotaConfig(TypedDict):
     """
     Data structure used for creating a new quota within a Vultr Managed Database (Kafka engine types only).
     """
@@ -103,13 +103,13 @@ class CreateDatabaseQuotaBody(TypedDict):
     request_percentage: int
     user: str
 
-class StartDatabaseMaintenanceBody(TypedDict):
+class StartDatabaseMaintenanceConfig(TypedDict):
     """
     Data structure used for starting a version upgrade for a Vultr Managed Database (PostgreSQL engine types only).
     """
     version: str
 
-class StartDatabaseMigrationBody(TypedDict, total=False):
+class StartDatabaseMigrationConfig(TypedDict, total=False):
     """
     Data structure used for starting a migration to a Vultr Managed Database.
     `host`, `port`, `username`, `password`, and `ssl` are required.
@@ -122,14 +122,14 @@ class StartDatabaseMigrationBody(TypedDict, total=False):
     database: str | None # Required for MySQL/PostgreSQL, excluded for Valkey
     ignored_databases: str | None # Comma-separated list, excluded for Valkey
 
-class CreateDatabaseReadReplicaBody(TypedDict):
+class CreateDatabaseReadReplicaConfig(TypedDict):
     """
     Data structure used for creating a read-only replica node for a Vultr Managed Database.
     """
     region: str
     label: str
 
-class RestoreDatabaseFromBackupBody(TypedDict):
+class RestoreDatabaseFromBackupConfig(TypedDict):
     """
     Data structure used for creating a new Vultr Managed Database from a backup.
     """
@@ -138,7 +138,7 @@ class RestoreDatabaseFromBackupBody(TypedDict):
     date: str # YYYY-MM-DD
     time: str # HH-MM-SS (UTC)
 
-class ForkDatabaseFromBackupBody(TypedDict):
+class ForkDatabaseFromBackupConfig(TypedDict):
     """
     Data structure used for forking a Vultr Managed Database to a new subscription from a backup.
     """
@@ -150,7 +150,7 @@ class ForkDatabaseFromBackupBody(TypedDict):
     date: str # YYYY-MM-DD
     time: str # HH-MM-SS (UTC)
 
-class CreateDatabaseConnectionPoolBody(TypedDict):
+class CreateDatabaseConnectionPoolConfig(TypedDict):
     """
     Data structure used for creating a new connection pool within a Vultr Managed Database (PostgreSQL engine types only).
     """
@@ -160,7 +160,7 @@ class CreateDatabaseConnectionPoolBody(TypedDict):
     mode: str
     size: int
 
-class UpdateDatabaseConnectionPoolBody(TypedDict):
+class UpdateDatabaseConnectionPoolConfig(TypedDict):
     """
     Data structure used for updating a connection pool within a Vultr Managed Database (PostgreSQL engine types only).
     """

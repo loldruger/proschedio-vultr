@@ -5,8 +5,9 @@ from typing import Literal
 
 from rustipy.result import Result
 
+from ..models.startup_script import UpdateStartupScriptConfig
 from ..request import Request, SuccessResponse, ErrorResponse
-from ..urls import URL_STARTUP_SCRIPT_LIST, URL_STARTUP_SCRIPT_ID
+from ..urls import URL_STARTUP_SCRIPTS, URL_STARTUP_SCRIPT_ID
 
 UpdateStartupScriptData = dict
 
@@ -23,7 +24,7 @@ class StartupScript:
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
-        request = Request(URL_STARTUP_SCRIPT_LIST.to_str()) \
+        request = Request(URL_STARTUP_SCRIPTS.to_str()) \
             .set_method(HTTPMethod.GET) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}")
 
@@ -54,7 +55,7 @@ class StartupScript:
         }
         body_dict = {k: v for k, v in body.items() if v is not None}
 
-        return await Request(URL_STARTUP_SCRIPT_LIST.to_str()) \
+        return await Request(URL_STARTUP_SCRIPTS.to_str()) \
             .set_method(HTTPMethod.POST) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .add_header("Content-Type", "application/json") \
@@ -70,38 +71,35 @@ class StartupScript:
             startup_id (str): The [Startup Script id](#operation/list-startup-scripts).
 
         Returns:
-            Result[SuccessResponse, ErrorResponse]: The result of the API request.
+            Result[SuccessResponse, ErrorResponse]: The response from the API.
         """
-        return await Request(URL_STARTUP_SCRIPT_ID.assign("startup-id", startup_id).to_str()) \
-            .set_method(HTTPMethod.GET) \
-            .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
-            .request()
+        return (
+            await Request(URL_STARTUP_SCRIPT_ID.assign("startup-id", startup_id).to_str()) \
+                .set_method(HTTPMethod.GET) \
+                .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
+                .request()
+        )
 
     @staticmethod
-    async def update_startup_script(startup_id: str, data: UpdateStartupScriptData) -> Result[SuccessResponse, ErrorResponse]:
+    async def update_startup_script(startup_id: str, data: UpdateStartupScriptConfig) -> Result[SuccessResponse, ErrorResponse]:
         """
         Update a Startup Script.
 
         Args:
             startup_id (str): The [Startup Script id](#operation/list-startup-scripts).
-            data (UpdateStartupScriptData): The data to update the Startup Script.
+            data (UpdateStartupScriptConfig): The data to update the Startup Script.
 
         Returns:
-            Result[SuccessResponse, ErrorResponse]: The result of the API request.
+            Result[SuccessResponse, ErrorResponse]: The response from the API.
         """
-        if hasattr(data, 'to_json'):
-            body_dict = {k: v for k, v in data.to_json().items() if v is not None}
-        elif isinstance(data, dict):
-            body_dict = {k: v for k, v in data.items() if v is not None}
-        else:
-            raise TypeError("Unsupported type for data")
-
-        return await Request(URL_STARTUP_SCRIPT_ID.assign("startup-id", startup_id).to_str()) \
-            .set_method(HTTPMethod.PATCH) \
-            .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
-            .add_header("Content-Type", "application/json") \
-            .set_body(json.dumps(body_dict)) \
-            .request()
+        return (
+            await Request(URL_STARTUP_SCRIPT_ID.assign("startup-id", startup_id).to_str()) \
+                .set_method(HTTPMethod.PATCH) \
+                .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
+                .add_header("Content-Type", "application/json") \
+                .set_body(json.dumps(data)) \
+                .request()
+        )
 
     @staticmethod
     async def delete_startup_script(startup_id: str) -> Result[SuccessResponse, ErrorResponse]:
@@ -112,9 +110,11 @@ class StartupScript:
             startup_id (str): The [Startup Script id](#operation/list-startup-scripts).
 
         Returns:
-            Result[SuccessResponse, ErrorResponse]: The result of the API request.
+            Result[SuccessResponse, ErrorResponse]: The response from the API.
         """
-        return await Request(URL_STARTUP_SCRIPT_ID.assign("startup-id", startup_id).to_str()) \
-            .set_method(HTTPMethod.DELETE) \
-            .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
-            .request()
+        return (
+            await Request(URL_STARTUP_SCRIPT_ID.assign("startup-id", startup_id).to_str()) \
+                .set_method(HTTPMethod.DELETE) \
+                .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
+                .request()
+        )

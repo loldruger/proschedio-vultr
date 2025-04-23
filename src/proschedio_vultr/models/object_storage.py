@@ -1,6 +1,6 @@
 from typing import TypedDict
 
-class CreateObjectStorageBody(TypedDict, total=False):
+class CreateConfig(TypedDict, total=False):
     """
     Data structure used for creating a Vultr Object Storage.
     `cluster_id` is required.

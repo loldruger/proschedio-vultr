@@ -1,6 +1,6 @@
 from typing import Literal, TypedDict
 
-class CreateContainerRegistryBody(TypedDict):
+class CreateContainerRegistryConfig(TypedDict):
     """
     Data structure used for creating a Vultr Container Registry Subscription.
     """
@@ -9,7 +9,7 @@ class CreateContainerRegistryBody(TypedDict):
     region: str
     plan: str
 
-class UpdateContainerRegistryBody(TypedDict, total=False):
+class UpdateContainerRegistryConfig(TypedDict, total=False):
     """
     Data structure used for updating a Vultr Container Registry Subscription.
     All fields are optional.
@@ -17,18 +17,18 @@ class UpdateContainerRegistryBody(TypedDict, total=False):
     public: bool | None
     plan: str | None
 
-class UpdateContainerRepositoryBody(TypedDict):
+class UpdateContainerRepositoryConfig(TypedDict):
     """
     Data structure used for updating a Vultr Container Registry Repository.
     """
     description: str
 
-class ContainerRobotAccess(TypedDict):
+class ContainerRobotAccessConfig(TypedDict):
     action: Literal["pull", "push", "delete"]
     resource: str
     effect: Literal["allow", "deny"]
 
-class UpdateContainerRobotBody(TypedDict, total=False):
+class UpdateContainerRobotConfig(TypedDict, total=False):
     """
     Data structure used for updating a Vultr Container Registry Robot.
     All fields are optional.
@@ -36,4 +36,4 @@ class UpdateContainerRobotBody(TypedDict, total=False):
     description: str | None
     disable: bool | None
     duration: int | None
-    access: list[ContainerRobotAccess] | None
+    access: list[ContainerRobotAccessConfig] | None

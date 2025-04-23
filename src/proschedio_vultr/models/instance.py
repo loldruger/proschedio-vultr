@@ -54,7 +54,7 @@ class UpdateConfig(TypedDict, total=False):
     backups: Literal["enabled", "disabled"] | None
     hostname: str | None
 
-class CreateRequestBody(TypedDict):
+class CreateRequestConfig(TypedDict):
     """
     Data structure used for creating a Vultr VPS Instance.
     """

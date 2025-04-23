@@ -1,6 +1,6 @@
 from typing import Literal, TypedDict
 
-class CreateUserBody(TypedDict, total=False):
+class CreateUserConfig(TypedDict, total=False):
     """
     Data structure used for creating a Vultr User.
     `email`, `name`, and `password` are required.
@@ -25,7 +25,7 @@ class CreateUserBody(TypedDict, total=False):
         "upgrade",
     ]] | None
 
-class UpdateUserBody(TypedDict, total=False):
+class UpdateUserConfig(TypedDict, total=False):
     """
     Data structure used for updating a Vultr User.
     All fields are optional.

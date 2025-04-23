@@ -28,7 +28,7 @@ class CreateConfig(TypedDict, total=False):
     mdisk_mode: Literal["raid1", "jbod", "none"] | None
     app_variables: dict[str, str] | None
 
-class UpdateBareMetalConfig(TypedDict, total=False):
+class UpdateConfig(TypedDict, total=False):
     """
     Data structure used for updating a Vultr Bare Metal instance.
     All fields are optional.
@@ -46,14 +46,14 @@ class UpdateBareMetalConfig(TypedDict, total=False):
     user_scheme: Literal["root", "limited"] | None
     mdisk_mode: Literal["raid1", "jbod", "none"] | None
 
-class CreateBareMetalReverseIPv4Body(TypedDict):
+class CreateReverseIPv4Config(TypedDict):
     """
     Data structure used for creating a reverse IPv4 entry for a Bare Metal Instance.
     """
     ip: str
     reverse: str
 
-class CreateBareMetalReverseIPv6Body(TypedDict):
+class CreateReverseIPv6Config(TypedDict):
     """
     Data structure used for creating a reverse IPv6 entry for a Bare Metal Instance.
     """
