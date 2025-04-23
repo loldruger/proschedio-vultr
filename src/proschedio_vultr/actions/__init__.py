@@ -30,9 +30,7 @@ from .vfs import VFS
 from .vpc2 import VPC2
 from .vpcs import VPCs
 
-
 class Action:
-    
     @staticmethod
     def instance() -> Instance:
         return Instance()
@@ -42,8 +40,8 @@ class Action:
         return BlockStorage()
     
     @staticmethod
-    def database() -> type[Database]:
-        return Database
+    def database() -> Database:
+        return Database()
 
     @staticmethod
     def account() -> Account:
