@@ -43,14 +43,6 @@ class Kubernetes:
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
-        processed_node_pools = []
-        for node_pool in node_pools:
-            if hasattr(node_pool, 'to_json'):
-                processed_node_pools.append(node_pool.to_json())
-            elif isinstance(node_pool, dict):
-                processed_node_pools.append(node_pool)
-            else:
-                raise TypeError("Unsupported type for node_pool in node_pools list")
 
         body = {
             "label": label,
@@ -58,15 +50,14 @@ class Kubernetes:
             "version": version,
             "ha_controlplanes": ha_controlplanes,
             "enable_firewall": enable_firewall,
-            "node_pools": processed_node_pools,
+            "node_pools": node_pools,
         }
-        body_dict = {k: v for k, v in body.items() if v is not None}
 
         return await Request(URL_KUBERNETES_LIST.to_str()) \
             .set_method(HTTPMethod.POST) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .add_header("Content-Type", "application/json") \
-            .set_body(json.dumps(body_dict)) \
+            .set_body(json.dumps(body)) \
             .request()
 
     @staticmethod
@@ -244,7 +235,7 @@ class Kubernetes:
             .request()
 
     @staticmethod
-    async def update_kubernetes_nodepool(vke_id: str, nodepool_id: str, node_quantity: int | None, tag: str | None, auto_scaler: bool | None, min_nodes: int | None, max_nodes: int | None, labels: dict | None) -> Result[SuccessResponse, ErrorResponse]:
+    async def update_kubernetes_nodepool(vke_id: str, nodepool_id: str, node_quantity: int | None, tag: str | None, auto_scaler: bool | None, min_nodes: int | None, max_nodes: int | None, labels: dict[str, str] | None) -> Result[SuccessResponse, ErrorResponse]:
         """
         Update a Nodepool on a Kubernetes Cluster.
 
@@ -269,13 +260,12 @@ class Kubernetes:
             "max_nodes": max_nodes,
             "labels": labels,
         }
-        body_dict = {k: v for k, v in body.items() if v is not None}
 
         return await Request(URL_KUBERNETES_NODEPOOL.assign("vke-id", vke_id).assign("nodepool-id", nodepool_id).to_str()) \
             .set_method(HTTPMethod.PATCH) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .add_header("Content-Type", "application/json") \
-            .set_body(json.dumps(body_dict)) \
+            .set_body(json.dumps(body)) \
             .request()
 
     @staticmethod
