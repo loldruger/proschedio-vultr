@@ -2,9 +2,9 @@ import json
 import os
 from http import HTTPMethod
 
-from proschedio_vultr.models.users import CreateUserConfig, UpdateUserConfig
 from rustipy.result import Result
 
+from ..models.users import CreateUserConfig, UpdateUserConfig
 from ..request import Request, SuccessResponse, ErrorResponse
 from ..urls import URL_USER_LIST, URL_USER_ID
 

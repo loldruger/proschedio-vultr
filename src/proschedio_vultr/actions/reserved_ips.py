@@ -2,9 +2,9 @@ import json
 import os
 from http import HTTPMethod
 
-from proschedio_vultr.models.reserved_ips import CreateReservedIpConfig
 from rustipy.result import Result
 
+from ..models.reserved_ips import CreateReservedIpConfig
 from ..request import Request, SuccessResponse, ErrorResponse
 from ..urls import (
     URL_RESERVED_IP, URL_RESERVED_IP_ID,

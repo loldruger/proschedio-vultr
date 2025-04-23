@@ -2,9 +2,9 @@ import json
 import os
 from http import HTTPMethod
 
-from proschedio_vultr.models.load_balancer import CreateLoadBalancerConfig, ForwardingRuleConfig, UpdateLoadBalancerConfig
 from rustipy.result import Result
 
+from ..models.load_balancer import CreateLoadBalancerConfig, ForwardingRuleConfig, UpdateLoadBalancerConfig
 from ..request import Request, SuccessResponse, ErrorResponse
 from ..urls import (
     URL_LOAD_BALANCER_LIST, URL_LOAD_BALANCER_CREATE, URL_LOAD_BALANCER_ID,
