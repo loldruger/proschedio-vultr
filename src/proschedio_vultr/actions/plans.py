@@ -25,7 +25,7 @@ class Plans:
         ] | None,
         per_page: int | None,
         cursor: str | None,
-        os: Literal["windows"] | None,
+        os_: Literal["windows"] | None,
     ) -> Result[SuccessResponse, ErrorResponse]:
         """
         Get a list of all VPS plans at Vultr.
@@ -34,7 +34,7 @@ class Plans:
             type (Literal["all", "vc2", "vdc", "vhf", "vhp", "voc", "voc-g", "voc-c", "voc-m", "voc-s", "vcg"] | None): Filter the results by type.
             per_page (int | None): Number of items requested per page. Default is 100 and Max is 500.
             cursor (str | None): Cursor for paging. See [Meta and Pagination](#section/Introduction/Meta-and-Pagination).
-            os (Literal["windows"] | None): Filter the results by operating system.
+            os_ (Literal["windows"] | None): Filter the results by operating system.
 
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
@@ -49,7 +49,7 @@ class Plans:
             request.add_param("per_page", str(per_page))
         if cursor is not None:
             request.add_param("cursor", cursor)
-        if os is not None:
-            request.add_param("os", os)
+        if os_ is not None:
+            request.add_param("os", os_)
 
         return await request.request()

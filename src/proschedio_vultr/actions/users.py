@@ -2,13 +2,11 @@ import json
 import os
 from http import HTTPMethod
 
+from proschedio_vultr.models.users import CreateUserConfig, UpdateUserConfig
 from rustipy.result import Result
 
 from ..request import Request, SuccessResponse, ErrorResponse
 from ..urls import URL_USER_LIST, URL_USER_ID
-
-CreateUserData = dict
-UpdateUserData = dict
 
 class Users:
     @staticmethod
@@ -35,28 +33,22 @@ class Users:
         return await request.request()
 
     @staticmethod
-    async def create_user(data: CreateUserData) -> Result[SuccessResponse, ErrorResponse]:
+    async def create_user(data: CreateUserConfig) -> Result[SuccessResponse, ErrorResponse]:
         """
         Create a new User. The `email`, `name`, and `password` attributes are required.
 
         Args:
-            data (CreateUserData): The data to create the User.
+            data (CreateUserConfig): The data to create the User.
 
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
-        if hasattr(data, 'to_json'):
-            body_dict = {k: v for k, v in data.to_json().items() if v is not None}
-        elif isinstance(data, dict):
-            body_dict = {k: v for k, v in data.items() if v is not None}
-        else:
-            raise TypeError("Unsupported type for data")
 
         return await Request(URL_USER_LIST.to_str()) \
             .set_method(HTTPMethod.POST) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .add_header("Content-Type", "application/json") \
-            .set_body(json.dumps(body_dict)) \
+            .set_body(json.dumps(data)) \
             .request()
 
     @staticmethod
@@ -76,29 +68,23 @@ class Users:
             .request()
 
     @staticmethod
-    async def update_user(user_id: str, data: UpdateUserData) -> Result[SuccessResponse, ErrorResponse]:
+    async def update_user(user_id: str, data: UpdateUserConfig) -> Result[SuccessResponse, ErrorResponse]:
         """
         Update information for a User.
 
         Args:
             user_id (str): The [User id](#operation/list-users).
-            data (UpdateUserData): The data to update the User.
+            data (UpdateUserConfig): The data to update the User.
 
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
-        if hasattr(data, 'to_json'):
-            body_dict = {k: v for k, v in data.to_json().items() if v is not None}
-        elif isinstance(data, dict):
-            body_dict = {k: v for k, v in data.items() if v is not None}
-        else:
-            raise TypeError("Unsupported type for data")
 
         return await Request(URL_USER_ID.assign("user-id", user_id).to_str()) \
             .set_method(HTTPMethod.PATCH) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .add_header("Content-Type", "application/json") \
-            .set_body(json.dumps(body_dict)) \
+            .set_body(json.dumps(data)) \
             .request()
 
     @staticmethod
@@ -112,6 +98,7 @@ class Users:
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
+
         return await Request(URL_USER_ID.assign("user-id", user_id).to_str()) \
             .set_method(HTTPMethod.DELETE) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \

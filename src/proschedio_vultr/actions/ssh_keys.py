@@ -79,19 +79,12 @@ class SSHKeys:
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
-        body = {}
-        if name is not None:
-            body["name"] = name
-        if ssh_key is not None:
-            body["ssh_key"] = ssh_key
-
-        body_dict = {k: v for k, v in body.items() if v is not None}
 
         return await Request(URL_SSH_KEY_ID.assign("ssh-key-id", ssh_key_id).to_str()) \
             .set_method(HTTPMethod.PATCH) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .add_header("Content-Type", "application/json") \
-            .set_body(json.dumps(body_dict)) \
+            .set_body(json.dumps({"name": name, "ssh_key": ssh_key})) \
             .request()
 
     @staticmethod

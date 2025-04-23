@@ -51,12 +51,6 @@ class CreateDatabaseUserConfig(TypedDict, total=False):
     encryption: Literal["caching_sha2_password", "mysql_native_password"] | None # MySQL only
     permission: Literal["admin", "read", "write", "readwrite"] | None # Kafka only
 
-class UpdateDatabaseUserConfig(TypedDict, total=False):
-    """
-    Data structure used for updating a database user within a Vultr Managed Database.
-    """
-    password: str | None # Can be empty to auto-generate
-
 class UpdateDatabaseUserAccessControlConfig(TypedDict, total=False):
     """
     Data structure used for configuring access control settings for a Managed Database user (Valkey and Kafka engine types only).
@@ -103,12 +97,6 @@ class CreateDatabaseQuotaConfig(TypedDict):
     request_percentage: int
     user: str
 
-class StartDatabaseMaintenanceConfig(TypedDict):
-    """
-    Data structure used for starting a version upgrade for a Vultr Managed Database (PostgreSQL engine types only).
-    """
-    version: str
-
 class StartDatabaseMigrationConfig(TypedDict, total=False):
     """
     Data structure used for starting a migration to a Vultr Managed Database.
@@ -121,13 +109,6 @@ class StartDatabaseMigrationConfig(TypedDict, total=False):
     ssl: bool # Required
     database: str | None # Required for MySQL/PostgreSQL, excluded for Valkey
     ignored_databases: str | None # Comma-separated list, excluded for Valkey
-
-class CreateDatabaseReadReplicaConfig(TypedDict):
-    """
-    Data structure used for creating a read-only replica node for a Vultr Managed Database.
-    """
-    region: str
-    label: str
 
 class RestoreDatabaseFromBackupConfig(TypedDict):
     """

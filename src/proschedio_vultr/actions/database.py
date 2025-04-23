@@ -6,6 +6,12 @@ from typing import Literal
 from rustipy.result import Result
 
 from ..request import Request, SuccessResponse, ErrorResponse
+from ..models.database import (
+    CreateDatabaseConfig, CreateDatabaseConnectionPoolConfig, CreateDatabaseQuotaConfig,
+    CreateDatabaseTopicConfig, CreateDatabaseUserConfig, ForkDatabaseFromBackupConfig,
+    RestoreDatabaseFromBackupConfig, StartDatabaseMigrationConfig, UpdateDatabaseConfig,
+    UpdateDatabaseConnectionPoolConfig, UpdateDatabaseTopicConfig, UpdateDatabaseUserAccessControlConfig
+)
 from ..urls import (
     URL_DATABASE_LIST_PLANS, URL_DATABASE_LIST, URL_DATABASE_ID,
     URL_DATABASE_USAGE, URL_DATABASE_USERS, URL_DATABASE_USER,
@@ -17,24 +23,6 @@ from ..urls import (
     URL_DATABASE_CONNECTION_POOLS, URL_DATABASE_CONNECTION_POOL,
     URL_DATABASE_ADVANCED_OPTIONS, URL_DATABASE_VERSION_UPGRADE
 )
-
-CreateDatabaseData = dict
-UpdateDatabaseData = dict
-CreateDatabaseUserData = dict
-UpdateDatabaseUserData = dict
-UpdateDatabaseUserAccessControlData = dict
-CreateDatabaseLogicalDatabaseData = dict
-CreateDatabaseTopicData = dict
-UpdateDatabaseTopicData = dict
-CreateDatabaseQuotaData = dict
-StartDatabaseMigrationData = dict
-CreateDatabaseReadReplicaData = dict
-RestoreDatabaseFromBackupData = dict
-ForkDatabaseFromBackupData = dict
-CreateDatabaseConnectionPoolData = dict
-UpdateDatabaseConnectionPoolData = dict
-StartDatabaseMaintenanceData = dict
-
 
 class Database:
     @staticmethod
@@ -90,28 +78,22 @@ class Database:
         return await request.request()
 
     @staticmethod
-    async def create_database(data: CreateDatabaseData) -> Result[SuccessResponse, ErrorResponse]:
+    async def create_database(data: CreateDatabaseConfig) -> Result[SuccessResponse, ErrorResponse]:
         """
         Create a new Managed Database in a `region` with the desired `plan`. Supply optional attributes as desired.
 
         Args:
-            data (CreateDatabaseData): The data to create the Managed Database.
+            data (CreateDatabaseConfig): The data to create the Managed Database.
 
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
-        if hasattr(data, 'to_json'):
-            body_dict = {k: v for k, v in data.to_json().items() if v is not None}
-        elif isinstance(data, dict):
-            body_dict = {k: v for k, v in data.items() if v is not None}
-        else:
-            raise TypeError("Unsupported type for data")
 
         return await Request(URL_DATABASE_LIST.to_str()) \
             .set_method(HTTPMethod.POST) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .add_header("Content-Type", "application/json") \
-            .set_body(json.dumps(body_dict)) \
+            .set_body(json.dumps(data)) \
             .request()
 
     @staticmethod
@@ -131,29 +113,23 @@ class Database:
             .request()
 
     @staticmethod
-    async def update_database(database_id: str, data: UpdateDatabaseData) -> Result[SuccessResponse, ErrorResponse]:
+    async def update_database(database_id: str, data: UpdateDatabaseConfig) -> Result[SuccessResponse, ErrorResponse]:
         """
         Update information for a Managed Database. All attributes are optional. If not set, the attributes will retain their original values.
 
         Args:
             database_id (str): The [Managed Database ID](#operation/list-databases).
-            data (UpdateDatabaseData): The data to update the Managed Database.
+            data (UpdateDatabaseConfig): The data to update the Managed Database.
 
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
-        if hasattr(data, 'to_json'):
-            body_dict = {k: v for k, v in data.to_json().items() if v is not None}
-        elif isinstance(data, dict):
-            body_dict = {k: v for k, v in data.items() if v is not None}
-        else:
-            raise TypeError("Unsupported type for data")
 
         return await Request(URL_DATABASE_ID.assign("database-id", database_id).to_str()) \
             .set_method(HTTPMethod.PUT) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .add_header("Content-Type", "application/json") \
-            .set_body(json.dumps(body_dict)) \
+            .set_body(json.dumps(data)) \
             .request()
 
     @staticmethod
@@ -205,29 +181,23 @@ class Database:
             .request()
 
     @staticmethod
-    async def create_database_user(database_id: str, data: CreateDatabaseUserData) -> Result[SuccessResponse, ErrorResponse]:
+    async def create_database_user(database_id: str, data: CreateDatabaseUserConfig) -> Result[SuccessResponse, ErrorResponse]:
         """
         Create a new database user within the Managed Database. Supply optional attributes as desired.
 
         Args:
             database_id (str): The [Managed Database ID](#operation/list-databases).
-            data (CreateDatabaseUserData): The data to create the database user.
+            data (CreateDatabaseUserConfig): The data to create the database user.
 
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
-        if hasattr(data, 'to_json'):
-            body_dict = {k: v for k, v in data.to_json().items() if v is not None}
-        elif isinstance(data, dict):
-            body_dict = {k: v for k, v in data.items() if v is not None}
-        else:
-            raise TypeError("Unsupported type for data")
 
         return await Request(URL_DATABASE_USERS.assign("database-id", database_id).to_str()) \
             .set_method(HTTPMethod.POST) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .add_header("Content-Type", "application/json") \
-            .set_body(json.dumps(body_dict)) \
+            .set_body(json.dumps(data)) \
             .request()
 
     @staticmethod
@@ -248,7 +218,7 @@ class Database:
             .request()
 
     @staticmethod
-    async def update_database_user(database_id: str, username: str, data: UpdateDatabaseUserData) -> Result[SuccessResponse, ErrorResponse]:
+    async def update_database_user(database_id: str, username: str, password: str | None) -> Result[SuccessResponse, ErrorResponse]:
         """
         Update database user information within a Managed Database.
 
@@ -260,18 +230,14 @@ class Database:
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
-        if hasattr(data, 'to_json'):
-            body_dict = {k: v for k, v in data.to_json().items() if v is not None}
-        elif isinstance(data, dict):
-            body_dict = {k: v for k, v in data.items() if v is not None}
-        else:
-            raise TypeError("Unsupported type for data")
 
+        data = {"password": password} if password is not None else {}
+        
         return await Request(URL_DATABASE_USER.assign("database-id", database_id).assign("username", username).to_str()) \
             .set_method(HTTPMethod.PUT) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .add_header("Content-Type", "application/json") \
-            .set_body(json.dumps(body_dict)) \
+            .set_body(json.dumps(data)) \
             .request()
 
     @staticmethod
@@ -292,7 +258,7 @@ class Database:
             .request()
 
     @staticmethod
-    async def update_database_user_access_control(database_id: str, username: str, data: UpdateDatabaseUserAccessControlData) -> Result[SuccessResponse, ErrorResponse]:
+    async def update_database_user_access_control(database_id: str, username: str, data: UpdateDatabaseUserAccessControlConfig) -> Result[SuccessResponse, ErrorResponse]:
         """
         Configure access control settings for a Managed Database user (Valkey and Kafka engine types only).
 
@@ -304,18 +270,12 @@ class Database:
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
-        if hasattr(data, 'to_json'):
-            body_dict = {k: v for k, v in data.to_json().items() if v is not None}
-        elif isinstance(data, dict):
-            body_dict = {k: v for k, v in data.items() if v is not None}
-        else:
-            raise TypeError("Unsupported type for data")
 
         return await Request(URL_DATABASE_USER_ACCESS_CONTROL.assign("database-id", database_id).assign("username", username).to_str()) \
             .set_method(HTTPMethod.PUT) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .add_header("Content-Type", "application/json") \
-            .set_body(json.dumps(body_dict)) \
+            .set_body(json.dumps(data)) \
             .request()
 
     @staticmethod
@@ -335,7 +295,7 @@ class Database:
             .request()
 
     @staticmethod
-    async def create_logical_database(database_id: str, data: CreateDatabaseLogicalDatabaseData) -> Result[SuccessResponse, ErrorResponse]:
+    async def create_logical_database(database_id: str, name: str) -> Result[SuccessResponse, ErrorResponse]:
         """
         Create a new logical database within the Managed Database (MySQL and PostgreSQL only).
 
@@ -346,18 +306,14 @@ class Database:
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
-        if hasattr(data, 'to_json'):
-            body_dict = {k: v for k, v in data.to_json().items() if v is not None}
-        elif isinstance(data, dict):
-            body_dict = {k: v for k, v in data.items() if v is not None}
-        else:
-            raise TypeError("Unsupported type for data")
+        
+        data = {"name": name}
 
         return await Request(URL_DATABASE_LOGICAL_DATABASES.assign("database-id", database_id).to_str()) \
             .set_method(HTTPMethod.POST) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .add_header("Content-Type", "application/json") \
-            .set_body(json.dumps(body_dict)) \
+            .set_body(json.dumps(data)) \
             .request()
 
     @staticmethod
@@ -411,7 +367,7 @@ class Database:
             .request()
 
     @staticmethod
-    async def create_topic(database_id: str, data: CreateDatabaseTopicData) -> Result[SuccessResponse, ErrorResponse]:
+    async def create_topic(database_id: str, data: CreateDatabaseTopicConfig) -> Result[SuccessResponse, ErrorResponse]:
         """
         Create a new topic within the Managed Database (Kafka engine types only).
 
@@ -422,18 +378,12 @@ class Database:
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
-        if hasattr(data, 'to_json'):
-            body_dict = {k: v for k, v in data.to_json().items() if v is not None}
-        elif isinstance(data, dict):
-            body_dict = {k: v for k, v in data.items() if v is not None}
-        else:
-            raise TypeError("Unsupported type for data")
 
         return await Request(URL_DATABASE_TOPICS.assign("database-id", database_id).to_str()) \
             .set_method(HTTPMethod.POST) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .add_header("Content-Type", "application/json") \
-            .set_body(json.dumps(body_dict)) \
+            .set_body(json.dumps(data)) \
             .request()
 
     @staticmethod
@@ -454,7 +404,7 @@ class Database:
             .request()
 
     @staticmethod
-    async def update_topic(database_id: str, topic_name: str, data: UpdateDatabaseTopicData) -> Result[SuccessResponse, ErrorResponse]:
+    async def update_topic(database_id: str, topic_name: str, data: UpdateDatabaseTopicConfig) -> Result[SuccessResponse, ErrorResponse]:
         """
         Update topic information within a Managed Database (Kafka engine types only).
 
@@ -466,18 +416,12 @@ class Database:
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
-        if hasattr(data, 'to_json'):
-            body_dict = {k: v for k, v in data.to_json().items() if v is not None}
-        elif isinstance(data, dict):
-            body_dict = {k: v for k, v in data.items() if v is not None}
-        else:
-            raise TypeError("Unsupported type for data")
 
         return await Request(URL_DATABASE_TOPIC.assign("database-id", database_id).assign("topic-name", topic_name).to_str()) \
             .set_method(HTTPMethod.PUT) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .add_header("Content-Type", "application/json") \
-            .set_body(json.dumps(body_dict)) \
+            .set_body(json.dumps(data)) \
             .request()
 
     @staticmethod
@@ -514,7 +458,7 @@ class Database:
             .request()
 
     @staticmethod
-    async def create_quota(database_id: str, data: CreateDatabaseQuotaData) -> Result[SuccessResponse, ErrorResponse]:
+    async def create_quota(database_id: str, data: CreateDatabaseQuotaConfig) -> Result[SuccessResponse, ErrorResponse]:
         """
         Create a new quota within the Managed Database (Kafka engine types only).
 
@@ -525,18 +469,12 @@ class Database:
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
-        if hasattr(data, 'to_json'):
-            body_dict = {k: v for k, v in data.to_json().items() if v is not None}
-        elif isinstance(data, dict):
-            body_dict = {k: v for k, v in data.items() if v is not None}
-        else:
-            raise TypeError("Unsupported type for data")
 
         return await Request(URL_DATABASE_QUOTAS.assign("database-id", database_id).to_str()) \
             .set_method(HTTPMethod.POST) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .add_header("Content-Type", "application/json") \
-            .set_body(json.dumps(body_dict)) \
+            .set_body(json.dumps(data)) \
             .request()
 
     @staticmethod
@@ -566,6 +504,7 @@ class Database:
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
+
         return await Request(URL_DATABASE_MAINTENANCE.assign("database-id", database_id).to_str()) \
             .set_method(HTTPMethod.POST) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
@@ -582,13 +521,14 @@ class Database:
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
+
         return await Request(URL_DATABASE_MIGRATION.assign("database-id", database_id).to_str()) \
             .set_method(HTTPMethod.GET) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .request()
 
     @staticmethod
-    async def start_migration(database_id: str, data: StartDatabaseMigrationData) -> Result[SuccessResponse, ErrorResponse]:
+    async def start_migration(database_id: str, data: StartDatabaseMigrationConfig) -> Result[SuccessResponse, ErrorResponse]:
         """
         Start a migration to the Managed Database.
 
@@ -599,18 +539,12 @@ class Database:
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
-        if hasattr(data, 'to_json'):
-            body_dict = {k: v for k, v in data.to_json().items() if v is not None}
-        elif isinstance(data, dict):
-            body_dict = {k: v for k, v in data.items() if v is not None}
-        else:
-            raise TypeError("Unsupported type for data")
 
         return await Request(URL_DATABASE_MIGRATION.assign("database-id", database_id).to_str()) \
             .set_method(HTTPMethod.POST) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .add_header("Content-Type", "application/json") \
-            .set_body(json.dumps(body_dict)) \
+            .set_body(json.dumps(data)) \
             .request()
 
     @staticmethod
@@ -624,13 +558,14 @@ class Database:
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
+
         return await Request(URL_DATABASE_MIGRATION.assign("database-id", database_id).to_str()) \
             .set_method(HTTPMethod.DELETE) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .request()
 
     @staticmethod
-    async def create_read_replica(database_id: str, data: CreateDatabaseReadReplicaData) -> Result[SuccessResponse, ErrorResponse]:
+    async def create_read_replica(database_id: str, region: str, label: str) -> Result[SuccessResponse, ErrorResponse]:
         """
         Create a read-only replica node for the Managed Database.
 
@@ -641,18 +576,12 @@ class Database:
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
-        if hasattr(data, 'to_json'):
-            body_dict = {k: v for k, v in data.to_json().items() if v is not None}
-        elif isinstance(data, dict):
-            body_dict = {k: v for k, v in data.items() if v is not None}
-        else:
-            raise TypeError("Unsupported type for data")
 
         return await Request(URL_DATABASE_READ_REPLICA.assign("database-id", database_id).to_str()) \
             .set_method(HTTPMethod.POST) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .add_header("Content-Type", "application/json") \
-            .set_body(json.dumps(body_dict)) \
+            .set_body(json.dumps({"region": region, "label": label})) \
             .request()
 
     @staticmethod
@@ -666,6 +595,7 @@ class Database:
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
+
         return await Request(URL_DATABASE_PROMOTE_READ_REPLICA.assign("database-id", database_id).to_str()) \
             .set_method(HTTPMethod.POST) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
@@ -682,13 +612,14 @@ class Database:
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
+
         return await Request(URL_DATABASE_BACKUPS.assign("database-id", database_id).to_str()) \
             .set_method(HTTPMethod.GET) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .request()
 
     @staticmethod
-    async def restore_from_backup(database_id: str, data: RestoreDatabaseFromBackupData) -> Result[SuccessResponse, ErrorResponse]:
+    async def restore_from_backup(database_id: str, data: RestoreDatabaseFromBackupConfig) -> Result[SuccessResponse, ErrorResponse]:
         """
         Create a new Managed Database from a backup.
 
@@ -699,22 +630,16 @@ class Database:
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
-        if hasattr(data, 'to_json'):
-            body_dict = {k: v for k, v in data.to_json().items() if v is not None}
-        elif isinstance(data, dict):
-            body_dict = {k: v for k, v in data.items() if v is not None}
-        else:
-            raise TypeError("Unsupported type for data")
 
         return await Request(URL_DATABASE_RESTORE.assign("database-id", database_id).to_str()) \
             .set_method(HTTPMethod.POST) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .add_header("Content-Type", "application/json") \
-            .set_body(json.dumps(body_dict)) \
+            .set_body(json.dumps(data)) \
             .request()
 
     @staticmethod
-    async def fork_from_backup(database_id: str, data: ForkDatabaseFromBackupData) -> Result[SuccessResponse, ErrorResponse]:
+    async def fork_from_backup(database_id: str, data: ForkDatabaseFromBackupConfig) -> Result[SuccessResponse, ErrorResponse]:
         """
         Fork a Managed Database to a new subscription from a backup.
 
@@ -725,18 +650,12 @@ class Database:
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
-        if hasattr(data, 'to_json'):
-            body_dict = {k: v for k, v in data.to_json().items() if v is not None}
-        elif isinstance(data, dict):
-            body_dict = {k: v for k, v in data.items() if v is not None}
-        else:
-            raise TypeError("Unsupported type for data")
 
         return await Request(URL_DATABASE_FORK.assign("database-id", database_id).to_str()) \
             .set_method(HTTPMethod.POST) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .add_header("Content-Type", "application/json") \
-            .set_body(json.dumps(body_dict)) \
+            .set_body(json.dumps(data)) \
             .request()
 
     @staticmethod
@@ -750,13 +669,14 @@ class Database:
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
+
         return await Request(URL_DATABASE_CONNECTION_POOLS.assign("database-id", database_id).to_str()) \
             .set_method(HTTPMethod.GET) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .request()
 
     @staticmethod
-    async def create_connection_pool(database_id: str, data: CreateDatabaseConnectionPoolData) -> Result[SuccessResponse, ErrorResponse]:
+    async def create_connection_pool(database_id: str, data: CreateDatabaseConnectionPoolConfig) -> Result[SuccessResponse, ErrorResponse]:
         """
         Create a new connection pool within the Managed Database (PostgreSQL engine types only).
 
@@ -767,18 +687,12 @@ class Database:
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
-        if hasattr(data, 'to_json'):
-            body_dict = {k: v for k, v in data.to_json().items() if v is not None}
-        elif isinstance(data, dict):
-            body_dict = {k: v for k, v in data.items() if v is not None}
-        else:
-            raise TypeError("Unsupported type for data")
 
         return await Request(URL_DATABASE_CONNECTION_POOLS.assign("database-id", database_id).to_str()) \
             .set_method(HTTPMethod.POST) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .add_header("Content-Type", "application/json") \
-            .set_body(json.dumps(body_dict)) \
+            .set_body(json.dumps(data)) \
             .request()
 
     @staticmethod
@@ -793,13 +707,14 @@ class Database:
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
+        
         return await Request(URL_DATABASE_CONNECTION_POOL.assign("database-id", database_id).assign("pool-name", pool_name).to_str()) \
             .set_method(HTTPMethod.GET) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .request()
 
     @staticmethod
-    async def update_connection_pool(database_id: str, pool_name: str, data: UpdateDatabaseConnectionPoolData) -> Result[SuccessResponse, ErrorResponse]:
+    async def update_connection_pool(database_id: str, pool_name: str, data: UpdateDatabaseConnectionPoolConfig) -> Result[SuccessResponse, ErrorResponse]:
         """
         Update connection-pool information within a Managed Database (PostgreSQL engine types only).
 
@@ -811,18 +726,12 @@ class Database:
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
-        if hasattr(data, 'to_json'):
-            body_dict = {k: v for k, v in data.to_json().items() if v is not None}
-        elif isinstance(data, dict):
-            body_dict = {k: v for k, v in data.items() if v is not None}
-        else:
-            raise TypeError("Unsupported type for data")
 
         return await Request(URL_DATABASE_CONNECTION_POOL.assign("database-id", database_id).assign("pool-name", pool_name).to_str()) \
             .set_method(HTTPMethod.PUT) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .add_header("Content-Type", "application/json") \
-            .set_body(json.dumps(body_dict)) \
+            .set_body(json.dumps(data)) \
             .request()
 
     @staticmethod
@@ -837,6 +746,7 @@ class Database:
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
+
         return await Request(URL_DATABASE_CONNECTION_POOL.assign("database-id", database_id).assign("pool-name", pool_name).to_str()) \
             .set_method(HTTPMethod.DELETE) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
@@ -853,6 +763,7 @@ class Database:
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
+
         return await Request(URL_DATABASE_ADVANCED_OPTIONS.assign("database-id", database_id).to_str()) \
             .set_method(HTTPMethod.GET) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
@@ -871,12 +782,12 @@ class Database:
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
-        body_dict = {option_name: value}
+
         return await Request(URL_DATABASE_ADVANCED_OPTIONS.assign("database-id", database_id).to_str()) \
             .set_method(HTTPMethod.PUT) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .add_header("Content-Type", "application/json") \
-            .set_body(json.dumps(body_dict)) \
+            .set_body(json.dumps({option_name: value})) \
             .request()
 
     @staticmethod
@@ -890,13 +801,14 @@ class Database:
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
+
         return await Request(URL_DATABASE_VERSION_UPGRADE.assign("database-id", database_id).to_str()) \
             .set_method(HTTPMethod.GET) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .request()
 
     @staticmethod
-    async def start_version_upgrade(database_id: str, data: StartDatabaseMaintenanceData) -> Result[SuccessResponse, ErrorResponse]:
+    async def start_version_upgrade(database_id: str, version: str) -> Result[SuccessResponse, ErrorResponse]:
         """
         Start a version upgrade for the Managed Database (PostgreSQL engine types only).
 
@@ -907,16 +819,10 @@ class Database:
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
-        if hasattr(data, 'to_json'):
-            body_dict = {k: v for k, v in data.to_json().items() if v is not None}
-        elif isinstance(data, dict):
-            body_dict = {k: v for k, v in data.items() if v is not None}
-        else:
-            raise TypeError("Unsupported type for data")
 
         return await Request(URL_DATABASE_VERSION_UPGRADE.assign("database-id", database_id).to_str()) \
             .set_method(HTTPMethod.POST) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .add_header("Content-Type", "application/json") \
-            .set_body(json.dumps(body_dict)) \
+            .set_body(json.dumps({"version": version})) \
             .request()

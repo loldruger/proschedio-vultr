@@ -1,19 +1,14 @@
 import json
 import os
 from http import HTTPMethod
-from typing import Literal
 
 from rustipy.result import Result
 
+from ..models.snapshots import CreateSnapshotFromUrlConfig
 from ..request import Request, SuccessResponse, ErrorResponse
 from ..urls import (
     URL_SNAPSHOT_LIST, URL_SNAPSHOT_ID, URL_SNAPSHOT_CREATE_FROM_URL
 )
-
-# Define placeholder types if models are not yet created
-# Using dict for now, replace with Pydantic models if available
-CreateSnapshotData = dict
-CreateSnapshotFromUrlData = dict
 
 class Snapshots:
     @staticmethod
@@ -47,28 +42,23 @@ class Snapshots:
         return await request.request()
 
     @staticmethod
-    async def create_snapshot(data: CreateSnapshotData) -> Result[SuccessResponse, ErrorResponse]:
+    async def create_snapshot(instance_id: str, description: str | None) -> Result[SuccessResponse, ErrorResponse]:
         """
         Create a new Snapshot for `instance_id`.
 
         Args:
-            data (CreateSnapshotData): The data to create the Snapshot.
+            instance_id (str): The ID of the instance to create the Snapshot for.
+            description (str | None): The optional description for the Snapshot.
 
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
-        if hasattr(data, 'to_json'):
-            body_dict = {k: v for k, v in data.to_json().items() if v is not None}
-        elif isinstance(data, dict):
-            body_dict = {k: v for k, v in data.items() if v is not None}
-        else:
-            raise TypeError("Unsupported type for data")
 
         return await Request(URL_SNAPSHOT_LIST.to_str()) \
             .set_method(HTTPMethod.POST) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .add_header("Content-Type", "application/json") \
-            .set_body(json.dumps(body_dict)) \
+            .set_body(json.dumps({"instance_id": instance_id, "description": description})) \
             .request()
 
     @staticmethod
@@ -117,32 +107,27 @@ class Snapshots:
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
+
         return await Request(URL_SNAPSHOT_ID.assign("snapshot-id", snapshot_id).to_str()) \
             .set_method(HTTPMethod.DELETE) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .request()
 
     @staticmethod
-    async def create_snapshot_from_url(data: CreateSnapshotFromUrlData) -> Result[SuccessResponse, ErrorResponse]:
+    async def create_snapshot_from_url(data: CreateSnapshotFromUrlConfig) -> Result[SuccessResponse, ErrorResponse]:
         """
         Create a new Snapshot from a RAW image located at `url`.
 
         Args:
-            data (CreateSnapshotFromUrlData): The data to create the Snapshot from URL.
+            data (CreateSnapshotFromUrlConfig): The data to create the Snapshot from URL.
 
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
-        if hasattr(data, 'to_json'):
-            body_dict = {k: v for k, v in data.to_json().items() if v is not None}
-        elif isinstance(data, dict):
-            body_dict = {k: v for k, v in data.items() if v is not None}
-        else:
-            raise TypeError("Unsupported type for data")
 
         return await Request(URL_SNAPSHOT_CREATE_FROM_URL.to_str()) \
             .set_method(HTTPMethod.POST) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .add_header("Content-Type", "application/json") \
-            .set_body(json.dumps(body_dict)) \
+            .set_body(json.dumps(data)) \
             .request()

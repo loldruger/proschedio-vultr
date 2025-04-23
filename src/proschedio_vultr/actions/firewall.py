@@ -1,19 +1,15 @@
 import json
 import os
 from http import HTTPMethod
-from typing import Literal
 
 from rustipy.result import Result
 
+from ..models.firewall import CreateFirewallRuleConfig
 from ..request import Request, SuccessResponse, ErrorResponse
 from ..urls import (
     URL_FIREWALL_GROUP_LIST, URL_FIREWALL_GROUP_ID,
     URL_FIREWALL_GROUP_RULES, URL_FIREWALL_GROUP_RULE
 )
-
-CreateFirewallGroupData = dict
-UpdateFirewallGroupData = dict
-CreateFirewallRuleData = dict
 
 class Firewall:
     @staticmethod
@@ -40,28 +36,22 @@ class Firewall:
         return await request.request()
 
     @staticmethod
-    async def create_firewall_group(data: CreateFirewallGroupData) -> Result[SuccessResponse, ErrorResponse]:
+    async def create_firewall_group(description: str) -> Result[SuccessResponse, ErrorResponse]:
         """
         Create a new Firewall Group.
 
         Args:
-            data (CreateFirewallGroupData): The data to create the Firewall Group.
+            description (str): The description for the Firewall Group.
 
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
-        if hasattr(data, 'to_json'):
-            body_dict = {k: v for k, v in data.to_json().items() if v is not None}
-        elif isinstance(data, dict):
-            body_dict = {k: v for k, v in data.items() if v is not None}
-        else:
-            raise TypeError("Unsupported type for data")
 
         return await Request(URL_FIREWALL_GROUP_LIST.to_str()) \
             .set_method(HTTPMethod.POST) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .add_header("Content-Type", "application/json") \
-            .set_body(json.dumps(body_dict)) \
+            .set_body(json.dumps({"description": description})) \
             .request()
 
     @staticmethod
@@ -81,29 +71,23 @@ class Firewall:
             .request()
 
     @staticmethod
-    async def update_firewall_group(firewall_group_id: str, data: UpdateFirewallGroupData) -> Result[SuccessResponse, ErrorResponse]:
+    async def update_firewall_group(firewall_group_id: str, description: str) -> Result[SuccessResponse, ErrorResponse]:
         """
         Update information for a Firewall Group.
 
         Args:
             firewall_group_id (str): The [Firewall Group id](#operation/list-firewall-groups).
-            data (UpdateFirewallGroupData): The data to update the Firewall Group.
+            description (str): The new description for the Firewall Group.
 
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
-        if hasattr(data, 'to_json'):
-            body_dict = {k: v for k, v in data.to_json().items() if v is not None}
-        elif isinstance(data, dict):
-            body_dict = {k: v for k, v in data.items() if v is not None}
-        else:
-            raise TypeError("Unsupported type for data")
 
         return await Request(URL_FIREWALL_GROUP_ID.assign("firewall-group-id", firewall_group_id).to_str()) \
             .set_method(HTTPMethod.PUT) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .add_header("Content-Type", "application/json") \
-            .set_body(json.dumps(body_dict)) \
+            .set_body(json.dumps({"description": description})) \
             .request()
 
     @staticmethod
@@ -147,29 +131,23 @@ class Firewall:
         return await request.request()
 
     @staticmethod
-    async def create_firewall_group_rule(firewall_group_id: str, data: CreateFirewallRuleData) -> Result[SuccessResponse, ErrorResponse]:
+    async def create_firewall_group_rule(firewall_group_id: str, data: CreateFirewallRuleConfig) -> Result[SuccessResponse, ErrorResponse]:
         """
         Create a Firewall Rule for a Firewall Group. The attributes `ip_type`, `protocol`, `subnet`, and `subnet_size` are required.
 
         Args:
             firewall_group_id (str): The [Firewall Group id](#operation/list-firewall-groups).
-            data (CreateFirewallRuleData): The data to create the Firewall Rule.
+            data (CreateFirewallRuleConfig): The data to create the Firewall Rule.
 
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
-        if hasattr(data, 'to_json'):
-            body_dict = {k: v for k, v in data.to_json().items() if v is not None}
-        elif isinstance(data, dict):
-            body_dict = {k: v for k, v in data.items() if v is not None}
-        else:
-            raise TypeError("Unsupported type for data")
 
         return await Request(URL_FIREWALL_GROUP_RULES.assign("firewall-group-id", firewall_group_id).to_str()) \
             .set_method(HTTPMethod.POST) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .add_header("Content-Type", "application/json") \
-            .set_body(json.dumps(body_dict)) \
+            .set_body(json.dumps(data)) \
             .request()
 
     @staticmethod

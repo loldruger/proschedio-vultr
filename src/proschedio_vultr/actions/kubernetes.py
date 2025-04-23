@@ -1,10 +1,10 @@
 import json
 import os
 from http import HTTPMethod
-from typing import List
 
 from rustipy.result import Result
 
+from ..models.kubenetes import NodePoolConfig
 from ..request import Request, SuccessResponse, ErrorResponse
 from ..urls import (
     URL_KUBERNETES_LIST, URL_KUBERNETES_ID, URL_KUBERNETES_DELETE_WITH_LINKED_RESOURCES,
@@ -12,8 +12,6 @@ from ..urls import (
     URL_KUBERNETES_NODEPOOLS, URL_KUBERNETES_NODEPOOL, URL_KUBERNETES_NODEPOOL_INSTANCE,
     URL_KUBERNETES_NODEPOOL_INSTANCE_RECYCLE, URL_KUBERNETES_CONFIG, URL_KUBERNETES_VERSIONS
 )
-
-NodePoolData = dict
 
 class Kubernetes:
     @staticmethod
@@ -30,7 +28,7 @@ class Kubernetes:
             .request()
 
     @staticmethod
-    async def create_kubernetes_cluster(label: str, region: str, version: str, node_pools: list[NodePoolData], ha_controlplanes: bool | None, enable_firewall: bool | None) -> Result[SuccessResponse, ErrorResponse]:
+    async def create_kubernetes_cluster(label: str, region: str, version: str, node_pools: list[NodePoolConfig], ha_controlplanes: bool | None, enable_firewall: bool | None) -> Result[SuccessResponse, ErrorResponse]:
         """
         Create Kubernetes Cluster.
 
@@ -209,7 +207,7 @@ class Kubernetes:
             .request()
 
     @staticmethod
-    async def create_kubernetes_nodepool(vke_id: str, data: NodePoolData) -> Result[SuccessResponse, ErrorResponse]:
+    async def create_kubernetes_nodepool(vke_id: str, data: NodePoolConfig) -> Result[SuccessResponse, ErrorResponse]:
         """
         Create NodePool for a Existing Kubernetes Cluster.
 
@@ -220,19 +218,12 @@ class Kubernetes:
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
-        if hasattr(data, 'to_json'):
-            body_dict = data.to_json()
-        elif isinstance(data, dict):
-            body_dict = data
-        else:
-            raise TypeError("Unsupported type for data")
-        body_dict = {k: v for k, v in body_dict.items() if v is not None}
 
         return await Request(URL_KUBERNETES_NODEPOOLS.assign("vke-id", vke_id).to_str()) \
             .set_method(HTTPMethod.POST) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .add_header("Content-Type", "application/json") \
-            .set_body(json.dumps(body_dict)) \
+            .set_body(json.dumps(data)) \
             .request()
 
     @staticmethod

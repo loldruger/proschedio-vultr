@@ -1,8 +1,8 @@
 import json
 import os
 from http import HTTPMethod
-from typing import Literal
 
+from proschedio_vultr.models.reserved_ips import CreateReservedIpConfig
 from rustipy.result import Result
 
 from ..request import Request, SuccessResponse, ErrorResponse
@@ -10,9 +10,6 @@ from ..urls import (
     URL_RESERVED_IP, URL_RESERVED_IP_ID,
     URL_RESERVED_IP_ATTACH, URL_RESERVED_IP_DETACH, URL_RESERVED_IP_CONVERT
 )
-
-CreateReservedIpData = dict
-ConvertIpToReservedIpData = dict
 
 class ReservedIPs:
     @staticmethod
@@ -39,28 +36,22 @@ class ReservedIPs:
         return await request.request()
 
     @staticmethod
-    async def create_reserved_ip(data: CreateReservedIpData) -> Result[SuccessResponse, ErrorResponse]:
+    async def create_reserved_ip(data: CreateReservedIpConfig) -> Result[SuccessResponse, ErrorResponse]:
         """
         Create a new Reserved IP. The `region` and `ip_type` attributes are required.
 
         Args:
-            data (CreateReservedIpData): The data to create the Reserved IP.
+            data (CreateReservedIpConfig): The data to create the Reserved IP.
 
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
-        if hasattr(data, 'to_json'):
-            body_dict = {k: v for k, v in data.to_json().items() if v is not None}
-        elif isinstance(data, dict):
-            body_dict = {k: v for k, v in data.items() if v is not None}
-        else:
-            raise TypeError("Unsupported type for data")
 
         return await Request(URL_RESERVED_IP.to_str()) \
             .set_method(HTTPMethod.POST) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .add_header("Content-Type", "application/json") \
-            .set_body(json.dumps(body_dict)) \
+            .set_body(json.dumps(data)) \
             .request()
 
     @staticmethod
@@ -109,6 +100,7 @@ class ReservedIPs:
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
+
         return await Request(URL_RESERVED_IP_ID.assign("reserved-ip", reserved_ip).to_str()) \
             .set_method(HTTPMethod.DELETE) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
@@ -126,6 +118,7 @@ class ReservedIPs:
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
+
         return await Request(URL_RESERVED_IP_ATTACH.assign("reserved-ip", reserved_ip).to_str()) \
             .set_method(HTTPMethod.POST) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
@@ -144,32 +137,28 @@ class ReservedIPs:
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
+
         return await Request(URL_RESERVED_IP_DETACH.assign("reserved-ip", reserved_ip).to_str()) \
             .set_method(HTTPMethod.POST) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .request()
 
     @staticmethod
-    async def convert_to_reserved_ip(data: ConvertIpToReservedIpData) -> Result[SuccessResponse, ErrorResponse]:
+    async def convert_to_reserved_ip(ip_address: str, label: str | None) -> Result[SuccessResponse, ErrorResponse]:
         """
         Convert the `ip_address` of an existing [instance](#operation/list-instances) into a Reserved IP.
 
         Args:
-            data (ConvertIpToReservedIpData): The data to convert the IP address.
+            ip_address (str): The IP address to convert.
+            label (str | None): The user-supplied label for the Reserved IP.
 
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
-        if hasattr(data, 'to_json'):
-            body_dict = {k: v for k, v in data.to_json().items() if v is not None}
-        elif isinstance(data, dict):
-            body_dict = {k: v for k, v in data.items() if v is not None}
-        else:
-            raise TypeError("Unsupported type for data")
 
         return await Request(URL_RESERVED_IP_CONVERT.to_str()) \
             .set_method(HTTPMethod.POST) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .add_header("Content-Type", "application/json") \
-            .set_body(json.dumps(body_dict)) \
+            .set_body(json.dumps({"ip_address": ip_address, "label": label})) \
             .request()

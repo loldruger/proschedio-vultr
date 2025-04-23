@@ -4,7 +4,7 @@ from http import HTTPMethod
 
 from rustipy.result import Result
 
-from ..models import CreateConfig
+from ..models.vpc2 import CreateConfig
 from ..request import Request, SuccessResponse, ErrorResponse
 from ..urls import (
     URL_VPC2_LIST, URL_VPC2_ID, URL_VPC2_NODES,

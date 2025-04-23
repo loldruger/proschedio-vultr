@@ -4,6 +4,7 @@ from http import HTTPMethod
 
 from rustipy.result import Result
 
+from ..models.container import CreateContainerRegistryConfig, UpdateContainerRegistryConfig, UpdateContainerRepositoryConfig, UpdateContainerRobotConfig
 from ..request import Request, SuccessResponse, ErrorResponse
 from ..urls import (
     URL_CONTAINER_LIST, URL_CONTAINER, URL_CONTAINER_ID,
@@ -12,11 +13,6 @@ from ..urls import (
     URL_CONTAINER_ROBOTS, URL_CONTAINER_ROBOT, URL_CONTAINER_ARTIFACTS,
     URL_CONTAINER_ARTIFACT, URL_CONTAINER_LIST_REGIONS
 )
-
-CreateContainerRegistryData = dict
-UpdateContainerRegistryData = dict
-UpdateContainerRepositoryData = dict
-UpdateContainerRobotData = dict
 
 class ContainerRegistry:
     @staticmethod
@@ -43,7 +39,7 @@ class ContainerRegistry:
         return await request.request()
 
     @staticmethod
-    async def create_container_registry(data: CreateContainerRegistryData) -> Result[SuccessResponse, ErrorResponse]:
+    async def create_container_registry(data: CreateContainerRegistryConfig) -> Result[SuccessResponse, ErrorResponse]:
         """
         Create a new Container Registry Subscription
 
@@ -53,12 +49,12 @@ class ContainerRegistry:
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
-        body_dict = {k: v for k, v in data.items() if v is not None}
+
         return await Request(URL_CONTAINER.to_str()) \
             .set_method(HTTPMethod.POST) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .add_header("Content-Type", "application/json") \
-            .set_body(json.dumps(body_dict)) \
+            .set_body(json.dumps(data)) \
             .request()
 
     @staticmethod
@@ -78,7 +74,7 @@ class ContainerRegistry:
             .request()
 
     @staticmethod
-    async def update_container_registry(registry_id: str, data: UpdateContainerRegistryData) -> Result[SuccessResponse, ErrorResponse]:
+    async def update_container_registry(registry_id: str, data: UpdateContainerRegistryConfig) -> Result[SuccessResponse, ErrorResponse]:
         """
         Update a Container Registry Subscription
 
@@ -89,12 +85,12 @@ class ContainerRegistry:
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
-        body_dict = {k: v for k, v in data.items() if v is not None}
+
         return await Request(URL_CONTAINER_ID.assign("registry-id", registry_id).to_str()) \
             .set_method(HTTPMethod.PUT) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .add_header("Content-Type", "application/json") \
-            .set_body(json.dumps(body_dict)) \
+            .set_body(json.dumps(data)) \
             .request()
 
     @staticmethod
@@ -147,7 +143,7 @@ class ContainerRegistry:
             .request()
 
     @staticmethod
-    async def update_container_repository(registry_id: str, repository_image: str, data: UpdateContainerRepositoryData) -> Result[SuccessResponse, ErrorResponse]:
+    async def update_container_repository(registry_id: str, repository_image: str, data: UpdateContainerRepositoryConfig) -> Result[SuccessResponse, ErrorResponse]:
         """
         Update a Repository in a Container Registry Subscription
 
@@ -159,12 +155,12 @@ class ContainerRegistry:
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
-        body_dict = {k: v for k, v in data.items() if v is not None}
+
         return await Request(URL_CONTAINER_REPOSITORY_IMAGE.assign("registry-id", registry_id).assign("repository-image", repository_image).to_str()) \
             .set_method(HTTPMethod.PUT) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .add_header("Content-Type", "application/json") \
-            .set_body(json.dumps(body_dict)) \
+            .set_body(json.dumps(data)) \
             .request()
 
     @staticmethod
@@ -269,7 +265,7 @@ class ContainerRegistry:
             .request()
 
     @staticmethod
-    async def update_robot(registry_id: str, robot_name: str, data: UpdateContainerRobotData) -> Result[SuccessResponse, ErrorResponse]:
+    async def update_robot(registry_id: str, robot_name: str, data: UpdateContainerRobotConfig) -> Result[SuccessResponse, ErrorResponse]:
         """
         Update the description, disable, duration, and add or remove access, in a Container Registry Subscription Robot
 
@@ -281,12 +277,12 @@ class ContainerRegistry:
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
-        body_dict = {k: v for k, v in data.items() if v is not None}
+
         return await Request(URL_CONTAINER_ROBOT.assign("registry-id", registry_id).assign("robot-name", robot_name).to_str()) \
             .set_method(HTTPMethod.PUT) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .add_header("Content-Type", "application/json") \
-            .set_body(json.dumps(body_dict)) \
+            .set_body(json.dumps(data)) \
             .request()
 
     @staticmethod

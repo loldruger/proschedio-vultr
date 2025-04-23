@@ -4,13 +4,12 @@ from http import HTTPMethod
 
 from rustipy.result import Result
 
+from ..models.object_storage import CreateConfig
 from ..request import Request, SuccessResponse, ErrorResponse
 from ..urls import (
     URL_OBJECT_STORAGE_LIST, URL_OBJECT_STORAGE_ID,
     URL_OBJECT_STORAGE_ID_REGENERATE_KEY, URL_OBJECT_STORAGE_CLUSTERS
 )
-
-CreateObjectStorageData = dict
 
 class ObjectStorage:
     @staticmethod
@@ -37,28 +36,22 @@ class ObjectStorage:
         return await request.request()
 
     @staticmethod
-    async def create_object_storage(data: CreateObjectStorageData) -> Result[SuccessResponse, ErrorResponse]:
+    async def create_object_storage(data: CreateConfig) -> Result[SuccessResponse, ErrorResponse]:
         """
         Create new Object Storage. The `cluster_id` attribute is required.
 
         Args:
-            data (CreateObjectStorageData): The data to create the Object Storage.
+            data (CreateObjectStorageConfig): The data to create the Object Storage.
 
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
-        if hasattr(data, 'to_json'):
-            body_dict = {k: v for k, v in data.to_json().items() if v is not None}
-        elif isinstance(data, dict):
-            body_dict = {k: v for k, v in data.items() if v is not None}
-        else:
-            raise TypeError("Unsupported type for data")
 
         return await Request(URL_OBJECT_STORAGE_LIST.to_str()) \
             .set_method(HTTPMethod.POST) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .add_header("Content-Type", "application/json") \
-            .set_body(json.dumps(body_dict)) \
+            .set_body(json.dumps(data)) \
             .request()
 
     @staticmethod
@@ -89,17 +82,12 @@ class ObjectStorage:
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
-        body = {}
-        if label is not None:
-            body["label"] = label
-
-        body_dict = {k: v for k, v in body.items() if v is not None}
 
         return await Request(URL_OBJECT_STORAGE_ID.assign("object-storage-id", object_storage_id).to_str()) \
             .set_method(HTTPMethod.PUT) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .add_header("Content-Type", "application/json") \
-            .set_body(json.dumps(body_dict)) \
+            .set_body(json.dumps({"label": label})) \
             .request()
 
     @staticmethod

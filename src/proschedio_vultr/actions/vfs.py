@@ -4,14 +4,12 @@ from http import HTTPMethod
 
 from rustipy.result import Result
 
+from ..models.vfs import CreateConfig
 from ..request import Request, SuccessResponse, ErrorResponse
 from ..urls import (
     URL_VFS_REGIONS, URL_VFS_LIST, URL_VFS_ID,
     URL_VFS_ATTACHMENTS, URL_VFS_ATTACHMENT
 )
-
-CreateVfsData = dict
-UpdateVfsData = dict
 
 class VFS:
     @staticmethod
@@ -51,28 +49,22 @@ class VFS:
         return await request.request()
 
     @staticmethod
-    async def create_vfs_subscription(data: CreateVfsData) -> Result[SuccessResponse, ErrorResponse]:
+    async def create_vfs_subscription(data: CreateConfig) -> Result[SuccessResponse, ErrorResponse]:
         """
         Create a new VFS subscription with the specified configuration.
 
         Args:
-            data (CreateVfsData): The data to create the VFS subscription.
+            data (CreateVfsConfig): The data to create the VFS subscription.
 
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
-        if hasattr(data, 'to_json'):
-            body_dict = {k: v for k, v in data.to_json().items() if v is not None}
-        elif isinstance(data, dict):
-            body_dict = {k: v for k, v in data.items() if v is not None}
-        else:
-            raise TypeError("Unsupported type for data")
 
         return await Request(URL_VFS_LIST.to_str()) \
             .set_method(HTTPMethod.POST) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .add_header("Content-Type", "application/json") \
-            .set_body(json.dumps(body_dict)) \
+            .set_body(json.dumps(data)) \
             .request()
 
     @staticmethod
@@ -92,29 +84,24 @@ class VFS:
             .request()
 
     @staticmethod
-    async def update_vfs_subscription(vfs_id: str, data: UpdateVfsData) -> Result[SuccessResponse, ErrorResponse]:
+    async def update_vfs_subscription(vfs_id: str, label: str, storage_size: int) -> Result[SuccessResponse, ErrorResponse]:
         """
         Update a VFS subscription's label or storage size.
 
         Args:
             vfs_id (str): ID of the VFS subscription to update.
-            data (UpdateVfsData): The data to update the VFS subscription.
+            label (str): The new label for the VFS subscription.
+            storage_size (int): The new storage size for the VFS subscription.
 
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
-        if hasattr(data, 'to_json'):
-            body_dict = {k: v for k, v in data.to_json().items() if v is not None}
-        elif isinstance(data, dict):
-            body_dict = {k: v for k, v in data.items() if v is not None}
-        else:
-            raise TypeError("Unsupported type for data")
 
         return await Request(URL_VFS_ID.assign("vfs-id", vfs_id).to_str()) \
             .set_method(HTTPMethod.PUT) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .add_header("Content-Type", "application/json") \
-            .set_body(json.dumps(body_dict)) \
+            .set_body(json.dumps({"label": label, "storage_size": storage_size})) \
             .request()
 
     @staticmethod

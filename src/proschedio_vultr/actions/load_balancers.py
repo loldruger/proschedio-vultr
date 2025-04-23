@@ -1,8 +1,8 @@
 import json
 import os
 from http import HTTPMethod
-from typing import List
 
+from proschedio_vultr.models.load_balancer import CreateLoadBalancerConfig, ForwardingRuleConfig, UpdateLoadBalancerConfig
 from rustipy.result import Result
 
 from ..request import Request, SuccessResponse, ErrorResponse
@@ -12,10 +12,6 @@ from ..urls import (
     URL_LOAD_BALANCER_FORWARDING_RULES, URL_LOAD_BALANCER_FORWARDING_RULE,
     URL_LOAD_BALANCER_FIREWALL_RULES, URL_LOAD_BALANCER_FIREWALL_RULE
 )
-
-CreateLoadBalancerData = dict
-UpdateLoadBalancerData = dict
-ForwardingRule = dict
 
 class LoadBalancers:
     @staticmethod
@@ -42,28 +38,22 @@ class LoadBalancers:
         return await request.request()
 
     @staticmethod
-    async def create_load_balancer(data: CreateLoadBalancerData) -> Result[SuccessResponse, ErrorResponse]:
+    async def create_load_balancer(data: CreateLoadBalancerConfig) -> Result[SuccessResponse, ErrorResponse]:
         """
         Create a new Load Balancer in a particular `region`.
 
         Args:
-            data (CreateLoadBalancerData): The data to create the Load Balancer.
+            data (CreateLoadBalancerConfig): The data to create the Load Balancer.
 
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
-        if hasattr(data, 'to_json'):
-            body_dict = {k: v for k, v in data.to_json().items() if v is not None}
-        elif isinstance(data, dict):
-            body_dict = {k: v for k, v in data.items() if v is not None}
-        else:
-            raise TypeError("Unsupported type for data")
 
         return await Request(URL_LOAD_BALANCER_CREATE.to_str()) \
             .set_method(HTTPMethod.POST) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .add_header("Content-Type", "application/json") \
-            .set_body(json.dumps(body_dict)) \
+            .set_body(json.dumps(data)) \
             .request()
 
     @staticmethod
@@ -77,35 +67,30 @@ class LoadBalancers:
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
+
         return await Request(URL_LOAD_BALANCER_ID.assign("load-balancer-id", load_balancer_id).to_str()) \
             .set_method(HTTPMethod.GET) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .request()
 
     @staticmethod
-    async def update_load_balancer(load_balancer_id: str, data: UpdateLoadBalancerData) -> Result[SuccessResponse, ErrorResponse]:
+    async def update_load_balancer(load_balancer_id: str, data: UpdateLoadBalancerConfig) -> Result[SuccessResponse, ErrorResponse]:
         """
         Update information for a Load Balancer. All attributes are optional. If not set, the attributes will retain their original values.
 
         Args:
             load_balancer_id (str): The [Load Balancer id](#operation/list-load-balancers).
-            data (UpdateLoadBalancerData): The data to update the Load Balancer.
+            data (UpdateLoadBalancerConfig): The data to update the Load Balancer.
 
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
-        if hasattr(data, 'to_json'):
-            body_dict = {k: v for k, v in data.to_json().items() if v is not None}
-        elif isinstance(data, dict):
-            body_dict = {k: v for k, v in data.items() if v is not None}
-        else:
-            raise TypeError("Unsupported type for data")
 
         return await Request(URL_LOAD_BALANCER_ID.assign("load-balancer-id", load_balancer_id).to_str()) \
             .set_method(HTTPMethod.PATCH) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .add_header("Content-Type", "application/json") \
-            .set_body(json.dumps(body_dict)) \
+            .set_body(json.dumps(data)) \
             .request()
 
     @staticmethod
@@ -119,6 +104,7 @@ class LoadBalancers:
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
+
         return await Request(URL_LOAD_BALANCER_ID.assign("load-balancer-id", load_balancer_id).to_str()) \
             .set_method(HTTPMethod.DELETE) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
@@ -135,6 +121,7 @@ class LoadBalancers:
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
+
         return await Request(URL_LOAD_BALANCER_SSL.assign("load-balancer-id", load_balancer_id).to_str()) \
             .set_method(HTTPMethod.DELETE) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
@@ -151,6 +138,7 @@ class LoadBalancers:
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
+
         return await Request(URL_LOAD_BALANCER_AUTO_SSL.assign("load-balancer-id", load_balancer_id).to_str()) \
             .set_method(HTTPMethod.DELETE) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
@@ -169,6 +157,7 @@ class LoadBalancers:
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
+
         request = Request(URL_LOAD_BALANCER_FORWARDING_RULES.assign("load-balancer-id", load_balancer_id).to_str()) \
             .set_method(HTTPMethod.GET) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}")
@@ -181,29 +170,23 @@ class LoadBalancers:
         return await request.request()
 
     @staticmethod
-    async def create_load_balancer_forwarding_rule(load_balancer_id: str, data: ForwardingRule) -> Result[SuccessResponse, ErrorResponse]:
+    async def create_load_balancer_forwarding_rule(load_balancer_id: str, data: ForwardingRuleConfig) -> Result[SuccessResponse, ErrorResponse]:
         """
         Create a new forwarding rule for a Load Balancer.
 
         Args:
             load_balancer_id (str): The [Load Balancer id](#operation/list-load-balancers).
-            data (ForwardingRule): The data to create the forwarding rule.
+            data (ForwardingRuleConfig): The data to create the forwarding rule.
 
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
-        if hasattr(data, 'to_json'):
-            body_dict = {k: v for k, v in data.to_json().items() if v is not None}
-        elif isinstance(data, dict):
-            body_dict = {k: v for k, v in data.items() if v is not None}
-        else:
-            raise TypeError("Unsupported type for data")
 
         return await Request(URL_LOAD_BALANCER_FORWARDING_RULES.assign("load-balancer-id", load_balancer_id).to_str()) \
             .set_method(HTTPMethod.POST) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .add_header("Content-Type", "application/json") \
-            .set_body(json.dumps(body_dict)) \
+            .set_body(json.dumps(data)) \
             .request()
 
     @staticmethod
@@ -218,6 +201,7 @@ class LoadBalancers:
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
+
         return await Request(URL_LOAD_BALANCER_FORWARDING_RULE.assign("load-balancer-id", load_balancer_id).assign("forwarding-rule-id", forwarding_rule_id).to_str()) \
             .set_method(HTTPMethod.GET) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
@@ -235,6 +219,7 @@ class LoadBalancers:
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
+
         return await Request(URL_LOAD_BALANCER_FORWARDING_RULE.assign("load-balancer-id", load_balancer_id).assign("forwarding-rule-id", forwarding_rule_id).to_str()) \
             .set_method(HTTPMethod.DELETE) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
@@ -253,6 +238,7 @@ class LoadBalancers:
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
+
         request = Request(URL_LOAD_BALANCER_FIREWALL_RULES.assign("load-balancer-id", load_balancer_id).to_str()) \
             .set_method(HTTPMethod.GET) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}")
@@ -276,6 +262,7 @@ class LoadBalancers:
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
+
         return await Request(URL_LOAD_BALANCER_FIREWALL_RULE.assign("load-balancer-id", load_balancer_id).assign("firewall-rule-id", firewall_rule_id).to_str()) \
             .set_method(HTTPMethod.GET) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \

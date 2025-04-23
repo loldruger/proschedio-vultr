@@ -4,10 +4,9 @@ from http import HTTPMethod
 
 from rustipy.result import Result
 
+from ..models.vpcs import CreateConfig
 from ..request import Request, SuccessResponse, ErrorResponse
 from ..urls import URL_VPC_LIST, URL_VPC_ID
-
-CreateVpcData = dict
 
 class VPCs:
     @staticmethod
@@ -34,28 +33,22 @@ class VPCs:
         return await request.request()
 
     @staticmethod
-    async def create_vpc(data: CreateVpcData) -> Result[SuccessResponse, ErrorResponse]:
+    async def create_vpc(data: CreateConfig) -> Result[SuccessResponse, ErrorResponse]:
         """
         Create a new VPC in a `region`. VPCs should use [RFC1918 private address space](https://tools.ietf.org/html/rfc1918).
 
         Args:
-            data (CreateVpcData): The data to create the VPC.
+            data (CreateConfig): The data to create the VPC.
 
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
-        if hasattr(data, 'to_json'):
-            body_dict = {k: v for k, v in data.to_json().items() if v is not None}
-        elif isinstance(data, dict):
-            body_dict = {k: v for k, v in data.items() if v is not None}
-        else:
-            raise TypeError("Unsupported type for data")
 
         return await Request(URL_VPC_LIST.to_str()) \
             .set_method(HTTPMethod.POST) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .add_header("Content-Type", "application/json") \
-            .set_body(json.dumps(body_dict)) \
+            .set_body(json.dumps(data)) \
             .request()
 
     @staticmethod
@@ -86,6 +79,7 @@ class VPCs:
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
+
         return await Request(URL_VPC_ID.assign("vpc-id", vpc_id).to_str()) \
             .set_method(HTTPMethod.PUT) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
@@ -104,6 +98,7 @@ class VPCs:
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
+
         return await Request(URL_VPC_ID.assign("vpc-id", vpc_id).to_str()) \
             .set_method(HTTPMethod.DELETE) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \

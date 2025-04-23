@@ -4,6 +4,7 @@ from http import HTTPMethod
 
 from rustipy.result import Result
 
+from ..models.subaccount import CreateConfig
 from ..request import Request, SuccessResponse, ErrorResponse
 from ..urls import URL_SUBACCOUNT_LIST
 
@@ -36,27 +37,20 @@ class Subaccounts:
         return await request.request()
 
     @staticmethod
-    async def create_subaccount(data: CreateSubaccountData) -> Result[SuccessResponse, ErrorResponse]:
+    async def create_subaccount(data: CreateConfig) -> Result[SuccessResponse, ErrorResponse]:
         """
         Create a new subaccount.
 
         Args:
-            data (CreateSubaccountData): The data to create the subaccount.
+            data (CreateConfig): The data to create the subaccount.
 
         Returns:
             Result[SuccessResponse, ErrorResponse]: The result of the API request.
         """
-        # Filter out None values before dumping to JSON
-        if hasattr(data, 'to_json'):
-            body_dict = {k: v for k, v in data.to_json().items() if v is not None}
-        elif isinstance(data, dict):
-            body_dict = {k: v for k, v in data.items() if v is not None}
-        else:
-            raise TypeError("Unsupported type for data")
 
         return await Request(URL_SUBACCOUNT_LIST.to_str()) \
             .set_method(HTTPMethod.POST) \
             .add_header("Authorization", f"Bearer {os.environ.get('VULTR_API_KEY')}") \
             .add_header("Content-Type", "application/json") \
-            .set_body(json.dumps(body_dict)) \
+            .set_body(json.dumps(data)) \
             .request()
